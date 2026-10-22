@@ -1,38 +1,42 @@
 --!strict
 local Config = {}
 
-Config.StartingCheese = 100
+Config.StartingCheese = 150
 Config.StarterBrainrot = "Noobini Pizzanini"
 Config.BaseIncomeTick = 1
 
--- Rebirth settings
-Config.RebirthRequirement = 50000      -- minimum cheese needed to rebirth
-Config.RebirthMultiplierPerLevel = 0.25 -- +25% income per rebirth
+-- Offline earnings (key retention feature from viral games)
+Config.OfflineIncomeCapHours = 8          -- max 8 hours offline earnings
+Config.OfflineIncomeMultiplier = 0.6      -- 60% of normal rate while offline
 
--- Steal settings
-Config.StealCooldown = 30               -- seconds
-Config.StealSuccessChance = 0.35      -- 35% chance
-Config.StealCooldownOnFail = 15
+-- Rebirth
+Config.RebirthRequirement = 75000
+Config.RebirthMultiplierPerLevel = 0.3    -- +30% per rebirth
 
--- Game Pass IDs (REPLACE THESE with real IDs from Creator Hub)
+-- Steal (make it more central like the top games)
+Config.StealCooldown = 25
+Config.StealSuccessChance = 0.40          -- 40% base chance
+Config.StealProtectionPassReduces = 0.15  -- VIP/protection reduces chance against you
+
+-- Lucky / Event system
+Config.LuckyEventChancePerMinute = 0.08   -- small chance every minute for server event
+Config.LuckyBlockRewardMultiplier = 3     -- temporary boost
+
+-- Game Passes (replace 0 with real IDs)
 Config.GamePasses = {
 	DoubleCheese = 0,
 	VIP = 0,
 	AutoCollect = 0,
-	LuckBoost = 0,
 	StealProtection = 0,
+	LuckyBoost = 0,
 }
 
--- Developer Product IDs (REPLACE THESE)
+-- Dev Products
 Config.DevProducts = {
-	CheesePackSmall = 0,   -- +5,000
-	CheesePackMedium = 0,  -- +50,000
-	CheesePackLarge = 0,   -- +500,000
-	CheesePackMega = 0,    -- +5,000,000
-}
-
-Config.DevProductRewards = {
-	-- these will be filled when you set real product IDs
+	CheesePackSmall = 0,
+	CheesePackMedium = 0,
+	CheesePackLarge = 0,
+	CheesePackMega = 0,
 }
 
 return Config
