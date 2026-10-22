@@ -1,67 +1,34 @@
 --!strict
---[[
-	BrainrotData.lua
-	All the meme brainrots and their stats
-]]
-
 local BrainrotData = {}
 
--- Rarity order: Common < Rare < Epic < Legendary < Mythic < Secret
 BrainrotData.List = {
-	["Noobini Pizzanini"] = {
-		Rarity = "Common",
-		Income = 5,
-		Price = 0, -- starter
-		Description = "The classic pizza noob. Pure beginner cheese.",
-	},
-	["Tim Cheese"] = {
-		Rarity = "Common",
-		Income = 12,
-		Price = 100,
-		Description = "A walking block of cheese. Meta.",
-	},
-	["Tralalero Tralala"] = {
-		Rarity = "Rare",
-		Income = 45,
-		Price = 750,
-		Description = "Three-legged shark with sneakers. Iconic.",
-	},
-	["Tung Tung Tung Sahur"] = {
-		Rarity = "Rare",
-		Income = 80,
-		Price = 2000,
-		Description = "Wooden drum man with a baseball bat. Terrifying.",
-	},
-	["Bombardiro Crocodilo"] = {
-		Rarity = "Epic",
-		Income = 250,
-		Price = 8000,
-		Description = "Crocodile + bomber jet hybrid. Absolute unit.",
-	},
-	["Ballerina Cappuccina"] = {
-		Rarity = "Epic",
-		Income = 320,
-		Price = 12000,
-		Description = "Elegant but completely unhinged.",
-	},
-	["La Vaca Saturno Saturnita"] = {
-		Rarity = "Legendary",
-		Income = 900,
-		Price = 50000,
-		Description = "Cosmic cow from another dimension.",
-	},
-	["Strawberry Elephant"] = {
-		Rarity = "Mythic",
-		Income = 3500,
-		Price = 250000,
-		Description = "The red elephant of pure brainrot power.",
-	},
-	["67"] = {
-		Rarity = "Secret",
-		Income = 15000,
-		Price = 2000000,
-		Description = "Nobody knows what 67 is. Everyone fears it.",
-	},
+	-- Common
+	["Noobini Pizzanini"] = {Rarity = "Common", Income = 8, Price = 0, Description = "Starter pizza noob."},
+	["Tim Cheese"] = {Rarity = "Common", Income = 18, Price = 150, Description = "Walking cheese block."},
+	["Skibidi Toilet"] = {Rarity = "Common", Income = 25, Price = 400, Description = "Classic toilet head."},
+
+	-- Rare
+	["Tralalero Tralala"] = {Rarity = "Rare", Income = 70, Price = 1200, Description = "Three-legged shark with kicks."},
+	["Tung Tung Tung Sahur"] = {Rarity = "Rare", Income = 110, Price = 2800, Description = "Wooden drum with bat."},
+	["Brr Brr Patapim"] = {Rarity = "Rare", Income = 140, Price = 4500, Description = "The chaotic one."},
+
+	-- Epic
+	["Bombardiro Crocodilo"] = {Rarity = "Epic", Income = 320, Price = 15000, Description = "Croc + bomber jet."},
+	["Ballerina Cappuccina"] = {Rarity = "Epic", Income = 410, Price = 22000, Description = "Elegant chaos."},
+	["Coffin Tung Tung Sahur"] = {Rarity = "Epic", Income = 480, Price = 35000, Description = "Even more cursed."},
+
+	-- Legendary
+	["La Vaca Saturno Saturnita"] = {Rarity = "Legendary", Income = 1100, Price = 90000, Description = "Cosmic cow."},
+	["La Grande Combinasion"] = {Rarity = "Legendary", Income = 1450, Price = 140000, Description = "The big combination."},
+	["Bombombini Gusini"] = {Rarity = "Legendary", Income = 1700, Price = 200000, Description = "Goose of mass destruction."},
+
+	-- Mythic
+	["Strawberry Elephant"] = {Rarity = "Mythic", Income = 4500, Price = 600000, Description = "Red elephant of power."},
+	["Job Job Job Sahur"] = {Rarity = "Mythic", Income = 6200, Price = 950000, Description = "The working man."},
+
+	-- Secret
+	["67"] = {Rarity = "Secret", Income = 25000, Price = 5000000, Description = "Nobody knows. Everyone fears."},
+	["Smurf Cat"] = {Rarity = "Secret", Income = 18000, Price = 3200000, Description = "Blue menace."},
 }
 
 function BrainrotData.Get(name: string)
@@ -72,14 +39,15 @@ function BrainrotData.GetAll()
 	return BrainrotData.List
 end
 
-function BrainrotData.GetByRarity(rarity: string)
-	local result = {}
+function BrainrotData.GetSortedByPrice()
+	local sorted = {}
 	for name, data in pairs(BrainrotData.List) do
-		if data.Rarity == rarity then
-			result[name] = data
-		end
+		table.insert(sorted, {Name = name, Data = data})
 	end
-	return result
+	table.sort(sorted, function(a, b)
+		return a.Data.Price < b.Data.Price
+	end)
+	return sorted
 end
 
 return BrainrotData

@@ -1,30 +1,38 @@
 --!strict
---[[
-	Config.lua
-	Central settings for Brainrot Cheese
-]]
-
 local Config = {}
 
-Config.StartingCheese = 50
+Config.StartingCheese = 100
 Config.StarterBrainrot = "Noobini Pizzanini"
+Config.BaseIncomeTick = 1
 
--- Income multiplier base
-Config.BaseIncomeTick = 1 -- every 1 second
+-- Rebirth settings
+Config.RebirthRequirement = 50000      -- minimum cheese needed to rebirth
+Config.RebirthMultiplierPerLevel = 0.25 -- +25% income per rebirth
 
--- Game Pass IDs (replace with your real ones from Creator Hub)
+-- Steal settings
+Config.StealCooldown = 30               -- seconds
+Config.StealSuccessChance = 0.35      -- 35% chance
+Config.StealCooldownOnFail = 15
+
+-- Game Pass IDs (REPLACE THESE with real IDs from Creator Hub)
 Config.GamePasses = {
-	DoubleCheese = 0,      -- 2x cheese income
-	VIP = 0,               -- VIP tag + extra starter
-	AutoCollect = 0,       -- auto collect nearby
-	LuckBoost = 0,         -- better rare spawns
+	DoubleCheese = 0,
+	VIP = 0,
+	AutoCollect = 0,
+	LuckBoost = 0,
+	StealProtection = 0,
 }
 
--- Developer Product IDs
+-- Developer Product IDs (REPLACE THESE)
 Config.DevProducts = {
-	CheesePackSmall = 0,   -- +1,000 Cheese
-	CheesePackMedium = 0,  -- +10,000 Cheese
-	CheesePackLarge = 0,   -- +100,000 Cheese
+	CheesePackSmall = 0,   -- +5,000
+	CheesePackMedium = 0,  -- +50,000
+	CheesePackLarge = 0,   -- +500,000
+	CheesePackMega = 0,    -- +5,000,000
+}
+
+Config.DevProductRewards = {
+	-- these will be filled when you set real product IDs
 }
 
 return Config

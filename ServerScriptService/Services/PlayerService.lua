@@ -1,49 +1,57 @@
 --!strict
---[[
-	PlayerService.lua
-	Handles leaderstats, starting cheese, and basic player setup
-]]
-
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
 local Config = require(script.Parent.Parent.Modules.Config)
 local BrainrotData = require(script.Parent.Parent.Modules.BrainrotData)
+local DataModule = require(script.Parent.Parent.Modules.DataStoreService)
 
 local PlayerService = {}
 
-local function setupLeaderstats(player: Player)
+local function setupPlayer(player: Player)
+	local data = DataModule.Load(player)
+
+	-- Leaderstats
 	local leaderstats = Instance.new("Folder")
 	leaderstats.Name = "leaderstats"
 	leaderstats.Parent = player
 
 	local cheese = Instance.new("IntValue")
 	cheese.Name = "Cheese"
-	cheese.Value = Config.StartingCheese
+	cheese.Value = data.Cheese or Config.StartingCheese
 	cheese.Parent = leaderstats
 
 	local brainrots = Instance.new("IntValue")
 	brainrots.Name = "Brainrots"
-	brainrots.Value = 1
+	brainrots.Value = #(data.OwnedBrainrots or {Config.StarterBrainrot})
 	brainrots.Parent = leaderstats
-end
 
-local function giveStarterBrainrot(player: Player)
-	-- Store owned brainrots in a folder under player
+	local rebirths = Instance.new("IntValue")
+	rebirths.Name = "Rebirths"
+	rebirths.Value = data.Rebirths or 0
+	rebirths.Parent = leaderstats
+
+	-- Owned brainrots folder
 	local owned = Instance.new("Folder")
 	owned.Name = "OwnedBrainrots"
 	owned.Parent = player
 
-	local starter = Instance.new("StringValue")
-	starter.Name = Config.StarterBrainrot
-	starter.Value = Config.StarterBrainrot
-	starter.Parent = owned
+	for _, name in ipairs(data.OwnedBrainrots or {Config.StarterBrainrot}) do
+		local v = Instance.new("StringValue")
+		v.Name = name
+		v.Value = name
+		v.Parent = owned
+	end
+
+	player:SetAttribute("LastSteal", data.LastSteal or 0)
+	player:SetAttribute("DataLoaded", true)
+
+	print(player.Name .. " loaded. Cheese: " .. cheese.Value .. " | Rebirths: " .. rebirths.Value)
 end
 
-Players.PlayerAdded:Connect(function(player)
-	setupLeaderstats(player)
-	giveStarterBrainrot(player)
-	print(player.Name .. " joined the brainrot. Welcome to the cheese.")
-end)
+Players.PlayerAdded:Connect(setupPlayer)
+
+-- In case players are already in (Studio testing)
+for _, player in ipairs(Players:GetPlayers()) do
+	task.spawn(setupPlayer, player)
+end
 
 return PlayerService
