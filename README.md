@@ -1,58 +1,58 @@
-# \ud83e\udda7 Brainrot Cheese - Roblox Game
+# \ud83d\udd25 Tung Tung Brainrot (Roblox)
 
-Viral meme/brainrot tycoon + PvP combat game. Collect brainrots, farm cheese, **transform into a brainrot**, farm XP & Power, and **kill other players**.
+Viral brainrot tycoon + PvP. Currency = **Tung Tung Sahur Coin (TungCoin)**.
 
-## Current Features (Oct 2026 meta)
+## Features
 
-### Core Loop
-- Collect & buy brainrots (income generators)
+### Economy
+- Collect brainrots \u2192 earn **TungCoins**/sec
 - Steal other players' brainrots
-- Offline earnings (up to 8 hours)
-- Rebirth system for permanent multipliers
+- Rebirth for permanent multipliers
+- Offline earnings
 
-### NEW: Combat System (the viral part)
-- **TRANSFORM** into one of your brainrots (power multiplier based on rarity)
-- **FARM XP** actively + passive XP while transformed
-- Level up \u2192 gain Power
-- **ATTACK** nearest players \u2192 deal damage based on Power
-- **KILL** players for Cheese + XP + steal some of their Power
-- Death penalty: lose a small % of cheese (keeps tension high)
+### Combat + Visual Morph
+- **TRANSFORM** into your strongest brainrot
+- Real visual morph: neon body color by rarity, scale up, particle aura, floating name tag
+- Farm XP (button + passive while transformed)
+- Level \u2192 Power
+- Attack & kill players for TungCoins + XP + steal Power
 
-### Brainrots included
-Common \u2192 Secret: Noobini Pizzanini, Tralalero Tralala, Tung Tung Sahur, Strawberry Elephant, Phoenix, 67, Smurf Cat, Headless Horseman and more.
+### Gaamato Map (auto-built)
+`MapBuilder` runs on server start and creates:
+- Neon night atmosphere (fog + bloom)
+- Central **Tung Tung Arena** with pillars & monument
+- 8 player plots in a circle (bases)
+- Farm XP pads around the map
+- Spawn plaza
 
-## How to use in Roblox Studio
-
-1. Create a new place or open yours
-2. Copy the folder structure into ServerScriptService and StarterPlayer
-3. Enable API Services (for DataStore)
-4. Replace Game Pass / Dev Product IDs in `Config.lua` with your own
-5. Playtest!
+Just hit Play \u2014 no manual map building needed for a solid test environment.
 
 ## Structure
 ```
 ServerScriptService/
   Main.server.lua
-  Modules/
-    Config.lua
-    BrainrotData.lua
-    DataStoreService.lua
+  Modules/ Config, BrainrotData, DataStoreService
   Services/
+    MapBuilder.lua      <-- procedural map
     PlayerService.lua
     BrainrotService.lua
-    CombatService.lua      <-- NEW
+    CombatService.lua    <-- morph + combat
     MonetizationService.lua
     RemoteService.lua
-StarterPlayer/
-  StarterPlayerScripts/
-    ClientUI.client.lua
+StarterPlayer/StarterPlayerScripts/
+  ClientUI.client.lua
 ```
 
-## Next steps to make it fire
-- Add actual character morphs / particle effects when transforming
-- Arena / safe zone for bases
-- Lucky blocks & server events
-- More monetization (2x XP, Power boost passes)
-- Mobile-friendly controls
+## Setup in Studio
+1. Copy folders into your place
+2. Enable API Services (DataStore)
+3. Play \u2014 map builds automatically
+4. Replace Game Pass / Dev Product IDs in Config.lua
 
-Let's print cheese. \ud83e\udda7\ud83d\udcb0
+## Next upgrades
+- Real custom character models per brainrot (MeshParts / accessories)
+- Plot claiming system tied to player
+- Safe zones on plots
+- More map props & music
+
+Print TungCoins. \ud83d\udd25\ud83d\udcb0

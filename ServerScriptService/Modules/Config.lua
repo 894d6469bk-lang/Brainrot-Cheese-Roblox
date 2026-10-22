@@ -1,40 +1,38 @@
 --!strict
 local Config = {}
 
-Config.StartingCheese = 150
+-- Currency is now TUNG TUNG SAHUR COIN (TungCoin)
+Config.StartingTungCoin = 150
 Config.StarterBrainrot = "Noobini Pizzanini"
 Config.BaseIncomeTick = 1
 
--- Offline earnings (key retention feature from viral games)
-Config.OfflineIncomeCapHours = 8          -- max 8 hours offline earnings
-Config.OfflineIncomeMultiplier = 0.6      -- 60% of normal rate while offline
+-- Offline earnings
+Config.OfflineIncomeCapHours = 8
+Config.OfflineIncomeMultiplier = 0.6
 
 -- Rebirth
 Config.RebirthRequirement = 75000
-Config.RebirthMultiplierPerLevel = 0.3    -- +30% per rebirth
+Config.RebirthMultiplierPerLevel = 0.3
 
--- Steal (make it more central like the top games)
+-- Steal
 Config.StealCooldown = 25
-Config.StealSuccessChance = 0.40          -- 40% base chance
-Config.StealProtectionPassReduces = 0.15  -- VIP/protection reduces chance against you
+Config.StealSuccessChance = 0.40
+Config.StealProtectionPassReduces = 0.15
 
--- Lucky / Event system
-Config.LuckyEventChancePerMinute = 0.08   -- small chance every minute for server event
-Config.LuckyBlockRewardMultiplier = 3     -- temporary boost
+-- Lucky / Event
+Config.LuckyEventChancePerMinute = 0.08
+Config.LuckyBlockRewardMultiplier = 3
 
--- ========== COMBAT / POWER SYSTEM (NEW) ==========
+-- Combat / Power
 Config.StartingXP = 0
 Config.StartingPower = 10
 Config.StartingLevel = 1
-
--- XP needed for next level: Level * XPPerLevelBase
 Config.XPPerLevelBase = 100
-Config.PowerPerLevel = 8                 -- +8 Power every level
+Config.PowerPerLevel = 8
 
--- Transform into your Brainrot
-Config.TransformCooldown = 15            -- seconds between transforms
-Config.TransformDuration = 45            -- how long you stay as brainrot
-Config.TransformPowerMultiplier = {      -- power boost while transformed by rarity
+Config.TransformCooldown = 15
+Config.TransformDuration = 45
+Config.TransformPowerMultiplier = {
 	Common = 1.2,
 	Rare = 1.5,
 	Epic = 2.0,
@@ -43,23 +41,40 @@ Config.TransformPowerMultiplier = {      -- power boost while transformed by rar
 	Secret = 6.0,
 }
 
--- Farming XP (passive while transformed + active)
-Config.PassiveXPPerSecond = 2            -- while transformed
-Config.FarmXPAmount = 25                 -- when you press Farm button / collect
+Config.PassiveXPPerSecond = 2
+Config.FarmXPAmount = 25
 Config.FarmCooldown = 3
 
--- PvP Kill
-Config.AttackCooldown = 1.2              -- seconds between attacks
-Config.BaseDamage = 15                   -- base damage
-Config.DamagePerPower = 0.4              -- extra damage from Power stat
-Config.KillCheeseReward = 350            -- cheese for killing someone
-Config.KillXPReward = 80                 -- XP for a kill
-Config.KillPowerSteal = 3                -- steal a bit of victim power
-Config.DeathCheeseLossPercent = 0.08     -- lose 8% cheese on death (not too punishing)
+Config.AttackCooldown = 1.2
+Config.BaseDamage = 15
+Config.DamagePerPower = 0.4
+Config.KillTungCoinReward = 350
+Config.KillXPReward = 80
+Config.KillPowerSteal = 3
+Config.DeathTungCoinLossPercent = 0.08
+
+-- Visual Morph colors by rarity
+Config.MorphColors = {
+	Common = Color3.fromRGB(180, 180, 180),
+	Rare = Color3.fromRGB(80, 160, 255),
+	Epic = Color3.fromRGB(180, 70, 255),
+	Legendary = Color3.fromRGB(255, 180, 40),
+	Mythic = Color3.fromRGB(255, 60, 120),
+	Secret = Color3.fromRGB(0, 255, 200),
+}
+
+Config.MorphScale = {
+	Common = 1.1,
+	Rare = 1.25,
+	Epic = 1.4,
+	Legendary = 1.6,
+	Mythic = 1.85,
+	Secret = 2.2,
+}
 
 -- Game Passes (replace 0 with real IDs)
 Config.GamePasses = {
-	DoubleCheese = 0,
+	DoubleTungCoin = 0,
 	VIP = 0,
 	AutoCollect = 0,
 	StealProtection = 0,
@@ -68,12 +83,11 @@ Config.GamePasses = {
 	PowerBoost = 0,
 }
 
--- Dev Products
 Config.DevProducts = {
-	CheesePackSmall = 0,
-	CheesePackMedium = 0,
-	CheesePackLarge = 0,
-	CheesePackMega = 0,
+	TungPackSmall = 0,
+	TungPackMedium = 0,
+	TungPackLarge = 0,
+	TungPackMega = 0,
 }
 
 return Config

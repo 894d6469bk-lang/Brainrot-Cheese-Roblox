@@ -1,7 +1,6 @@
 --!strict
 local Players = game:GetService("Players")
 local Config = require(script.Parent.Parent.Modules.Config)
-local BrainrotData = require(script.Parent.Parent.Modules.BrainrotData)
 local DataModule = require(script.Parent.Parent.Modules.DataStoreService)
 
 local PlayerService = {}
@@ -9,15 +8,14 @@ local PlayerService = {}
 local function setupPlayer(player: Player)
 	local data = DataModule.Load(player)
 
-	-- Leaderstats
 	local leaderstats = Instance.new("Folder")
 	leaderstats.Name = "leaderstats"
 	leaderstats.Parent = player
 
-	local cheese = Instance.new("IntValue")
-	cheese.Name = "Cheese"
-	cheese.Value = data.Cheese or Config.StartingCheese
-	cheese.Parent = leaderstats
+	local tung = Instance.new("IntValue")
+	tung.Name = "TungCoin"
+	tung.Value = data.TungCoin or Config.StartingTungCoin
+	tung.Parent = leaderstats
 
 	local brainrots = Instance.new("IntValue")
 	brainrots.Name = "Brainrots"
@@ -29,7 +27,6 @@ local function setupPlayer(player: Player)
 	rebirths.Value = data.Rebirths or 0
 	rebirths.Parent = leaderstats
 
-	-- NEW: Combat stats
 	local level = Instance.new("IntValue")
 	level.Name = "Level"
 	level.Value = data.Level or Config.StartingLevel
@@ -45,7 +42,6 @@ local function setupPlayer(player: Player)
 	power.Value = data.Power or Config.StartingPower
 	power.Parent = leaderstats
 
-	-- Owned brainrots folder
 	local owned = Instance.new("Folder")
 	owned.Name = "OwnedBrainrots"
 	owned.Parent = player
@@ -62,12 +58,10 @@ local function setupPlayer(player: Player)
 	player:SetAttribute("TransformPowerMulti", 1)
 	player:SetAttribute("DataLoaded", true)
 
-	print(player.Name .. " loaded. Cheese: " .. cheese.Value .. " | Level: " .. level.Value .. " | Power: " .. power.Value)
+	print(player.Name .. " loaded. TungCoin: " .. tung.Value .. " | Level: " .. level.Value .. " | Power: " .. power.Value)
 end
 
 Players.PlayerAdded:Connect(setupPlayer)
-
--- In case players are already in (Studio testing)
 for _, player in ipairs(Players:GetPlayers()) do
 	task.spawn(setupPlayer, player)
 end

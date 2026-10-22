@@ -1,10 +1,11 @@
 --!strict
-print("Loading Brainrot Cheese...")
+print("Loading Tung Tung Brainrot...")
 
+require(script.Parent.Services.MapBuilder)       -- builds the gaamato map first
 require(script.Parent.Services.PlayerService)
 require(script.Parent.Services.BrainrotService)
-require(script.Parent.Services.CombatService)   -- NEW: XP / Power / Transform / Kill
+require(script.Parent.Services.CombatService)
 require(script.Parent.Services.MonetizationService)
 require(script.Parent.Services.RemoteService)
 
-print("\ud83e\udda7 Brainrot Cheese FULLY LOADED. Become a brainrot. Farm power. Kill. Print cheese.")
+print("\ud83d\udd25 TUNG TUNG SAHUR COIN economy live. Morph. Farm. Kill. Print coins.")

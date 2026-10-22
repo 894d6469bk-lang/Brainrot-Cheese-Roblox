@@ -1,18 +1,17 @@
 --!strict
 --[[
-	CombatService - Become a Brainrot, Farm XP/Power, Kill other players
-	Viral PvP loop for maximum engagement
+	CombatService - Transform + Visual Morph + Farm XP/Power + Kill
 ]]
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 
 local Config = require(script.Parent.Parent.Modules.Config)
 local BrainrotData = require(script.Parent.Parent.Modules.BrainrotData)
 
 local CombatService = {}
 
--- Helpers
 local function getLeaderstats(player: Player)
 	return player:FindFirstChild("leaderstats")
 end
@@ -38,7 +37,6 @@ local function addXP(player: Player, amount: number)
 
 	ls.XP.Value += amount
 
-	-- Level up check
 	local needed = getLevel(player) * Config.XPPerLevelBase
 	while ls.XP.Value >= needed do
 		ls.XP.Value -= needed
@@ -48,7 +46,6 @@ local function addXP(player: Player, amount: number)
 		end
 		needed = ls.Level.Value * Config.XPPerLevelBase
 
-		-- Fire notification via remote if exists
 		local remotes = ReplicatedStorage:FindFirstChild("Remotes")
 		if remotes and remotes:FindFirstChild("Notify") then
 			remotes.Notify:FireClient(player, "Success", "LEVEL UP! Now Level " .. ls.Level.Value .. " | Power +" .. Config.PowerPerLevel)
@@ -56,7 +53,114 @@ local function addXP(player: Player, amount: number)
 	end
 end
 
--- ========== TRANSFORM INTO BRAINROT ==========
+-- ========== VISUAL MORPH ==========
+local function clearMorph(player: Player)
+	local char = player.Character
+	if not char then return end
+
+	-- remove aura / billboard
+	local aura = char:FindFirstChild("BrainrotAura")
+	if aura then aura:Destroy() end
+	local tag = char:FindFirstChild("BrainrotTag")
+	if tag then tag:Destroy() end
+
+	-- reset scale
+	local humanoid = char:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		humanoid:SetStateEnabled(Enum.HumanoidStateType.Physics, true)
+		local scale = char:FindFirstChild("Humanoid") and humanoid
+		pcall(function()
+			if humanoid.BodyDepthScale then humanoid.BodyDepthScale.Value = 1 end
+			if humanoid.BodyHeightScale then humanoid.BodyHeightScale.Value = 1 end
+			if humanoid.BodyWidthScale then humanoid.BodyWidthScale.Value = 1 end
+			if humanoid.HeadScale then humanoid.HeadScale.Value = 1 end
+		end)
+	end
+
+	-- reset body colors
+	for _, part in ipairs(char:GetChildren()) do
+		if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+			part.Color = Color3.fromRGB(163, 162, 165) -- defaultish
+			part.Material = Enum.Material.Plastic
+		end
+	end
+end
+
+local function applyVisualMorph(player: Player, brainrotName: string, rarity: string)
+	local char = player.Character
+	if not char then return end
+	local humanoid = char:FindFirstChildOfClass("Humanoid")
+	if not humanoid then return end
+
+	clearMorph(player)
+
+	local color = Config.MorphColors[rarity] or Color3.fromRGB(255, 255, 255)
+	local scaleMul = Config.MorphScale[rarity] or 1.2
+
+	-- Scale body (R15 scale values)
+	pcall(function()
+		local function setScale(name, val)
+			local obj = humanoid:FindFirstChild(name)
+			if obj and obj:IsA("NumberValue") then
+				obj.Value = val
+			end
+		end
+		setScale("BodyDepthScale", scaleMul)
+		setScale("BodyHeightScale", scaleMul)
+		setScale("BodyWidthScale", scaleMul)
+		setScale("HeadScale", math.min(scaleMul * 1.15, 2.5))
+	end)
+
+	-- Color all body parts neon-ish
+	for _, part in ipairs(char:GetChildren()) do
+		if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+			part.Color = color
+			part.Material = Enum.Material.Neon
+		end
+	end
+
+	-- Floating name tag
+	local hrp = char:FindFirstChild("HumanoidRootPart")
+	if hrp then
+		local bb = Instance.new("BillboardGui")
+		bb.Name = "BrainrotTag"
+		bb.Size = UDim2.new(0, 200, 0, 50)
+		bb.StudsOffset = Vector3.new(0, 3 + scaleMul, 0)
+		bb.AlwaysOnTop = true
+		bb.Parent = char
+
+		local label = Instance.new("TextLabel")
+		label.Size = UDim2.new(1, 0, 1, 0)
+		label.BackgroundTransparency = 1
+		label.Text = "\ud83d\udd25 " .. brainrotName
+		label.TextColor3 = color
+		label.TextStrokeTransparency = 0.3
+		label.Font = Enum.Font.GothamBold
+		label.TextScaled = true
+		label.Parent = bb
+
+		-- Particle aura
+		local attachment = Instance.new("Attachment")
+		attachment.Name = "BrainrotAura"
+		attachment.Parent = hrp
+
+		local particles = Instance.new("ParticleEmitter")
+		particles.Name = "AuraParticles"
+		particles.Color = ColorSequence.new(color)
+		particles.Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.8),
+			NumberSequenceKeypoint.new(1, 0),
+		})
+		particles.Lifetime = NumberRange.new(0.6, 1.2)
+		particles.Rate = 25 + (scaleMul * 15)
+		particles.Speed = NumberRange.new(2, 5)
+		particles.SpreadAngle = Vector2.new(360, 360)
+		particles.LightEmission = 0.8
+		particles.Parent = attachment
+	end
+end
+
+-- ========== TRANSFORM ==========
 function CombatService.Transform(player: Player, brainrotName: string?): (boolean, string)
 	local now = os.time()
 	local last = player:GetAttribute("LastTransform") or 0
@@ -64,22 +168,20 @@ function CombatService.Transform(player: Player, brainrotName: string?): (boolea
 		return false, "Transform on cooldown (" .. (Config.TransformCooldown - (now - last)) .. "s)"
 	end
 
-	-- If already transformed, cancel
 	if player:GetAttribute("IsTransformed") then
 		player:SetAttribute("IsTransformed", false)
 		player:SetAttribute("TransformBrainrot", nil)
 		player:SetAttribute("TransformEnd", 0)
 		player:SetAttribute("TransformPowerMulti", 1)
+		clearMorph(player)
 		return true, "De-transformed back to human"
 	end
 
 	local owned = player:FindFirstChild("OwnedBrainrots")
 	if not owned then return false, "No brainrots owned" end
 
-	-- Pick brainrot (requested or strongest owned)
 	local chosen = brainrotName
 	if not chosen or not owned:FindFirstChild(chosen) then
-		-- Auto pick highest rarity / income
 		local bestName, bestIncome = nil, -1
 		for _, v in ipairs(owned:GetChildren()) do
 			local data = BrainrotData.Get(v.Name)
@@ -106,10 +208,12 @@ function CombatService.Transform(player: Player, brainrotName: string?): (boolea
 	local multi = Config.TransformPowerMultiplier[data.Rarity] or 1.2
 	player:SetAttribute("TransformPowerMulti", multi)
 
+	-- VISUAL MORPH
+	applyVisualMorph(player, chosen, data.Rarity)
+
 	return true, "TRANSFORMED into " .. chosen .. "! Power x" .. multi .. " for " .. Config.TransformDuration .. "s"
 end
 
--- Auto de-transform when time ends
 task.spawn(function()
 	while true do
 		task.wait(1)
@@ -121,6 +225,7 @@ task.spawn(function()
 					player:SetAttribute("IsTransformed", false)
 					player:SetAttribute("TransformBrainrot", nil)
 					player:SetAttribute("TransformPowerMulti", 1)
+					clearMorph(player)
 
 					local remotes = ReplicatedStorage:FindFirstChild("Remotes")
 					if remotes and remotes:FindFirstChild("Notify") then
@@ -132,7 +237,6 @@ task.spawn(function()
 	end
 end)
 
--- Passive XP while transformed
 task.spawn(function()
 	while true do
 		task.wait(1)
@@ -144,7 +248,6 @@ task.spawn(function()
 	end
 end)
 
--- ========== FARM XP ==========
 function CombatService.FarmXP(player: Player): (boolean, string)
 	local now = os.time()
 	local last = player:GetAttribute("LastFarm") or 0
@@ -156,14 +259,13 @@ function CombatService.FarmXP(player: Player): (boolean, string)
 
 	local amount = Config.FarmXPAmount
 	if player:GetAttribute("IsTransformed") then
-		amount = math.floor(amount * 1.75) -- bonus while transformed
+		amount = math.floor(amount * 1.75)
 	end
 
 	addXP(player, amount)
 	return true, "+" .. amount .. " XP farmed!"
 end
 
--- ========== ATTACK / KILL ==========
 function CombatService.Attack(attacker: Player, victimUserId: number): (boolean, string)
 	if typeof(victimUserId) ~= "number" then return false, "Invalid target" end
 
@@ -178,7 +280,6 @@ function CombatService.Attack(attacker: Player, victimUserId: number): (boolean,
 	end
 	attacker:SetAttribute("LastAttack", now)
 
-	-- Calculate damage
 	local power = getPower(attacker)
 	local multi = 1
 	if attacker:GetAttribute("IsTransformed") then
@@ -187,7 +288,6 @@ function CombatService.Attack(attacker: Player, victimUserId: number): (boolean,
 
 	local damage = math.floor((Config.BaseDamage + power * Config.DamagePerPower) * multi)
 
-	-- Apply damage via Humanoid
 	local char = victim.Character
 	if not char then return false, "Victim has no character" end
 	local humanoid = char:FindFirstChildOfClass("Humanoid")
@@ -195,14 +295,12 @@ function CombatService.Attack(attacker: Player, victimUserId: number): (boolean,
 
 	humanoid:TakeDamage(damage)
 
-	-- Check if kill
 	if humanoid.Health <= 0 then
-		-- REWARDS
 		local aLS = getLeaderstats(attacker)
 		local vLS = getLeaderstats(victim)
 
-		if aLS and aLS:FindFirstChild("Cheese") then
-			aLS.Cheese.Value += Config.KillCheeseReward
+		if aLS and aLS:FindFirstChild("TungCoin") then
+			aLS.TungCoin.Value += Config.KillTungCoinReward
 		end
 		addXP(attacker, Config.KillXPReward)
 
@@ -212,16 +310,15 @@ function CombatService.Attack(attacker: Player, victimUserId: number): (boolean,
 			aLS.Power.Value += stolen
 		end
 
-		-- Victim loses some cheese
-		if vLS and vLS:FindFirstChild("Cheese") then
-			local loss = math.floor(vLS.Cheese.Value * Config.DeathCheeseLossPercent)
-			vLS.Cheese.Value = math.max(0, vLS.Cheese.Value - loss)
+		if vLS and vLS:FindFirstChild("TungCoin") then
+			local loss = math.floor(vLS.TungCoin.Value * Config.DeathTungCoinLossPercent)
+			vLS.TungCoin.Value = math.max(0, vLS.TungCoin.Value - loss)
 		end
 
 		local remotes = ReplicatedStorage:FindFirstChild("Remotes")
 		if remotes and remotes:FindFirstChild("Notify") then
-			remotes.Notify:FireClient(attacker, "Success", "KILLED " .. victim.Name .. "! +" .. Config.KillCheeseReward .. " Cheese +" .. Config.KillXPReward .. " XP")
-			remotes.Notify:FireClient(victim, "Error", attacker.Name .. " killed you! Lost some cheese...")
+			remotes.Notify:FireClient(attacker, "Success", "KILLED " .. victim.Name .. "! +" .. Config.KillTungCoinReward .. " TungCoins +" .. Config.KillXPReward .. " XP")
+			remotes.Notify:FireClient(victim, "Error", attacker.Name .. " killed you! Lost some TungCoins...")
 		end
 
 		return true, "KILL! You destroyed " .. victim.Name
@@ -230,7 +327,6 @@ function CombatService.Attack(attacker: Player, victimUserId: number): (boolean,
 	return true, "Hit " .. victim.Name .. " for " .. damage .. " damage! (HP left: " .. math.floor(humanoid.Health) .. ")"
 end
 
--- Get current combat stats for UI
 function CombatService.GetStats(player: Player)
 	return {
 		XP = getXP(player),
@@ -241,5 +337,19 @@ function CombatService.GetStats(player: Player)
 		TransformEnd = player:GetAttribute("TransformEnd") or 0,
 	}
 end
+
+-- Re-apply morph if character respawns while transformed
+Players.PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Connect(function()
+		task.wait(0.5)
+		if player:GetAttribute("IsTransformed") then
+			local name = player:GetAttribute("TransformBrainrot")
+			local data = name and BrainrotData.Get(name)
+			if data then
+				applyVisualMorph(player, name, data.Rarity)
+			end
+		end
+	end)
+end)
 
 return CombatService

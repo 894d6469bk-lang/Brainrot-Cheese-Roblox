@@ -22,26 +22,26 @@ MarketplaceService.ProcessReceipt = function(receiptInfo)
 	end
 
 	local leaderstats = player:FindFirstChild("leaderstats")
-	if not leaderstats or not leaderstats:FindFirstChild("Cheese") then
+	if not leaderstats or not leaderstats:FindFirstChild("TungCoin") then
 		return Enum.ProductPurchaseDecision.NotProcessedYet
 	end
 
 	local rewards = {
-		[Config.DevProducts.CheesePackSmall] = 5000,
-		[Config.DevProducts.CheesePackMedium] = 50000,
-		[Config.DevProducts.CheesePackLarge] = 500000,
-		[Config.DevProducts.CheesePackMega] = 5000000,
+		[Config.DevProducts.TungPackSmall] = 5000,
+		[Config.DevProducts.TungPackMedium] = 50000,
+		[Config.DevProducts.TungPackLarge] = 500000,
+		[Config.DevProducts.TungPackMega] = 5000000,
 	}
 
 	local amount = rewards[receiptInfo.ProductId]
 	if amount then
-		leaderstats.Cheese.Value += amount
-		print(player.Name .. " purchased cheese pack +" .. amount)
+		leaderstats.TungCoin.Value += amount
+		print(player.Name .. " purchased TungCoin pack +" .. amount)
 		return Enum.ProductPurchaseDecision.PurchaseGranted
 	end
 
 	return Enum.ProductPurchaseDecision.NotProcessedYet
 end
 
-print("MonetizationService ready")
+print("MonetizationService ready (TungCoin)")
 return MonetizationService

@@ -1,13 +1,12 @@
 --!strict
 --[[
-	Simple DataStore wrapper for saving player progress
-	Now includes XP, Power, Level
+	DataStore - Tung Tung Sahur Coin economy + combat stats
 ]]
 
 local DataStoreService = game:GetService("DataStoreService")
 local Players = game:GetService("Players")
 
-local DATA_STORE_NAME = "BrainrotCheese_v2"  -- bumped version for new stats
+local DATA_STORE_NAME = "BrainrotTung_v1"
 local playerStore = DataStoreService:GetDataStore(DATA_STORE_NAME)
 
 local DataModule = {}
@@ -18,12 +17,15 @@ function DataModule.Load(player: Player)
 	end)
 
 	if success and data then
+		-- migrate old Cheese field if present
+		if data.Cheese and not data.TungCoin then
+			data.TungCoin = data.Cheese
+		end
 		return data
 	end
 
-	-- Default data
 	return {
-		Cheese = 150,
+		TungCoin = 150,
 		Rebirths = 0,
 		OwnedBrainrots = {"Noobini Pizzanini"},
 		LastSteal = 0,
@@ -43,14 +45,15 @@ function DataModule.Save(player: Player, data)
 end
 
 local function collectData(player: Player)
+	local ls = player:FindFirstChild("leaderstats")
 	local data = {
-		Cheese = player.leaderstats and player.leaderstats.Cheese and player.leaderstats.Cheese.Value or 0,
-		Rebirths = player.leaderstats and player.leaderstats.Rebirths and player.leaderstats.Rebirths.Value or 0,
+		TungCoin = ls and ls:FindFirstChild("TungCoin") and ls.TungCoin.Value or 0,
+		Rebirths = ls and ls:FindFirstChild("Rebirths") and ls.Rebirths.Value or 0,
 		OwnedBrainrots = {},
 		LastSteal = player:GetAttribute("LastSteal") or 0,
-		Level = player.leaderstats and player.leaderstats.Level and player.leaderstats.Level.Value or 1,
-		XP = player.leaderstats and player.leaderstats.XP and player.leaderstats.XP.Value or 0,
-		Power = player.leaderstats and player.leaderstats.Power and player.leaderstats.Power.Value or 10,
+		Level = ls and ls:FindFirstChild("Level") and ls.Level.Value or 1,
+		XP = ls and ls:FindFirstChild("XP") and ls.XP.Value or 0,
+		Power = ls and ls:FindFirstChild("Power") and ls.Power.Value or 10,
 	}
 	local owned = player:FindFirstChild("OwnedBrainrots")
 	if owned then
@@ -61,7 +64,6 @@ local function collectData(player: Player)
 	return data
 end
 
--- Auto save every 60 seconds + on leave
 task.spawn(function()
 	while true do
 		task.wait(60)
