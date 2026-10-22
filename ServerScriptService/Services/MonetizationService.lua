@@ -26,7 +26,6 @@ MarketplaceService.ProcessReceipt = function(receiptInfo)
 		return Enum.ProductPurchaseDecision.NotProcessedYet
 	end
 
-	-- You will replace these 0s with real ProductIds later
 	local rewards = {
 		[Config.DevProducts.CheesePackSmall] = 5000,
 		[Config.DevProducts.CheesePackMedium] = 50000,
@@ -37,4 +36,12 @@ MarketplaceService.ProcessReceipt = function(receiptInfo)
 	local amount = rewards[receiptInfo.ProductId]
 	if amount then
 		leaderstats.Cheese.Value += amount
-		print(player.Name .. " purchased cheese pack +
+		print(player.Name .. " purchased cheese pack +" .. amount)
+		return Enum.ProductPurchaseDecision.PurchaseGranted
+	end
+
+	return Enum.ProductPurchaseDecision.NotProcessedYet
+end
+
+print("MonetizationService ready")
+return MonetizationService
