@@ -29,6 +29,22 @@ local function setupPlayer(player: Player)
 	rebirths.Value = data.Rebirths or 0
 	rebirths.Parent = leaderstats
 
+	-- NEW: Combat stats
+	local level = Instance.new("IntValue")
+	level.Name = "Level"
+	level.Value = data.Level or Config.StartingLevel
+	level.Parent = leaderstats
+
+	local xp = Instance.new("IntValue")
+	xp.Name = "XP"
+	xp.Value = data.XP or Config.StartingXP
+	xp.Parent = leaderstats
+
+	local power = Instance.new("IntValue")
+	power.Name = "Power"
+	power.Value = data.Power or Config.StartingPower
+	power.Parent = leaderstats
+
 	-- Owned brainrots folder
 	local owned = Instance.new("Folder")
 	owned.Name = "OwnedBrainrots"
@@ -42,9 +58,11 @@ local function setupPlayer(player: Player)
 	end
 
 	player:SetAttribute("LastSteal", data.LastSteal or 0)
+	player:SetAttribute("IsTransformed", false)
+	player:SetAttribute("TransformPowerMulti", 1)
 	player:SetAttribute("DataLoaded", true)
 
-	print(player.Name .. " loaded. Cheese: " .. cheese.Value .. " | Rebirths: " .. rebirths.Value)
+	print(player.Name .. " loaded. Cheese: " .. cheese.Value .. " | Level: " .. level.Value .. " | Power: " .. power.Value)
 end
 
 Players.PlayerAdded:Connect(setupPlayer)

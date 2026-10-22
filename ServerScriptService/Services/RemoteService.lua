@@ -3,6 +3,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 
 local BrainrotService = require(script.Parent.BrainrotService)
+local CombatService = require(script.Parent.CombatService)
 local BrainrotData = require(script.Parent.Parent.Modules.BrainrotData)
 
 -- Create Remotes folder if missing
@@ -28,6 +29,12 @@ local RebirthRE = getOrCreateRemote("Rebirth")
 local StealRE = getOrCreateRemote("Steal")
 local GetShopDataRE = getOrCreateRemote("GetShopData")
 local NotifyRE = getOrCreateRemote("Notify")
+
+-- NEW combat remotes
+local TransformRE = getOrCreateRemote("Transform")
+local FarmXPRE = getOrCreateRemote("FarmXP")
+local AttackRE = getOrCreateRemote("Attack")
+local GetCombatStatsRE = getOrCreateRemote("GetCombatStats")
 
 -- Buy
 BuyBrainrotRE.OnServerEvent:Connect(function(player, brainrotName)
@@ -62,4 +69,25 @@ GetShopDataRE.OnServerEvent:Connect(function(player)
 	GetShopDataRE:FireClient(player, BrainrotData.GetSortedByPrice())
 end)
 
-print("RemoteService ready - all events created")
+-- ========== COMBAT REMOTES ==========
+TransformRE.OnServerEvent:Connect(function(player, brainrotName)
+	local success, msg = CombatService.Transform(player, brainrotName)
+	NotifyRE:FireClient(player, success and "Success" or "Error", msg)
+end)
+
+FarmXPRE.OnServerEvent:Connect(function(player)
+	local success, msg = CombatService.FarmXP(player)
+	NotifyRE:FireClient(player, success and "Success" or "Error", msg)
+end)
+
+AttackRE.OnServerEvent:Connect(function(player, victimUserId)
+	if typeof(victimUserId) ~= "number" then return end
+	local success, msg = CombatService.Attack(player, victimUserId)
+	NotifyRE:FireClient(player, success and "Success" or "Error", msg)
+end)
+
+GetCombatStatsRE.OnServerEvent:Connect(function(player)
+	GetCombatStatsRE:FireClient(player, CombatService.GetStats(player))
+end)
+
+print("RemoteService ready - all events created (including Combat)")

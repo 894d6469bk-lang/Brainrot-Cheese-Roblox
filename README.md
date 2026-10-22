@@ -1,55 +1,58 @@
-# 🦧 Brainrot Cheese 🦠
+# \ud83e\udda7 Brainrot Cheese - Roblox Game
 
-**Full meme / Italian Brainrot Roblox game** ready for Studio.
+Viral meme/brainrot tycoon + PvP combat game. Collect brainrots, farm cheese, **transform into a brainrot**, farm XP & Power, and **kill other players**.
 
-Collect absurd brainrots → they print Cheese every second → buy better ones → steal from others → rebirth for multipliers → sell Game Passes & Dev Products.
+## Current Features (Oct 2026 meta)
 
-## Important: Can I connect directly to your Roblox account?
+### Core Loop
+- Collect & buy brainrots (income generators)
+- Steal other players' brainrots
+- Offline earnings (up to 8 hours)
+- Rebirth system for permanent multipliers
 
-**Όχι.** Δεν υπάρχει official τρόπος να συνδεθώ το AI απευθείας στο Roblox Studio ή στο account σου.
+### NEW: Combat System (the viral part)
+- **TRANSFORM** into one of your brainrots (power multiplier based on rarity)
+- **FARM XP** actively + passive XP while transformed
+- Level up \u2192 gain Power
+- **ATTACK** nearest players \u2192 deal damage based on Power
+- **KILL** players for Cheese + XP + steal some of their Power
+- Death penalty: lose a small % of cheese (keeps tension high)
 
-Ο μόνος τρόπος είναι:
-1. Εγώ γράφω όλον τον κώδικα στο GitHub
-2. Εσύ τον αντιγράφεις στο Roblox Studio
-3. Δημιουργείς το place και φτιάχνεις Game Passes / Dev Products στο Creator Hub
+### Brainrots included
+Common \u2192 Secret: Noobini Pizzanini, Tralalero Tralala, Tung Tung Sahur, Strawberry Elephant, Phoenix, 67, Smurf Cat, Headless Horseman and more.
 
-Αυ θέλεις, μπορώ να σου δίνω ακριβώς οδηγίες μέσα μέσα για να το βάλεις μέσα στο Studio.
+## How to use in Roblox Studio
 
-## How to install in Roblox Studio (5 minutes)
+1. Create a new place or open yours
+2. Copy the folder structure into ServerScriptService and StarterPlayer
+3. Enable API Services (for DataStore)
+4. Replace Game Pass / Dev Product IDs in `Config.lua` with your own
+5. Playtest!
 
-1. Άνοιξε Roblox Studio → New → Baseplate
-2. Στο **Explorer** δεξιά του ServerScriptService φτιάξε φακέλους:
-   - `Modules`
-   - `Services`
-3. Αντίγραψε όλα τα scripts από το GitHub στα αντίστοιχα μέρη (δες παρακάτω)
-4. Στο **ReplicatedStorage** φτιάξε φάκελο `Remotes` και βάλε μέσα τα RemoteEvents που λέει το script
-5. Στο **StarterPlayer > StarterPlayerScripts** βάλε το ClientUI
-6. Press Play → δουλεύει ήδη
+## Structure
+```
+ServerScriptService/
+  Main.server.lua
+  Modules/
+    Config.lua
+    BrainrotData.lua
+    DataStoreService.lua
+  Services/
+    PlayerService.lua
+    BrainrotService.lua
+    CombatService.lua      <-- NEW
+    MonetizationService.lua
+    RemoteService.lua
+StarterPlayer/
+  StarterPlayerScripts/
+    ClientUI.client.lua
+```
 
-## Features included now
+## Next steps to make it fire
+- Add actual character morphs / particle effects when transforming
+- Arena / safe zone for bases
+- Lucky blocks & server events
+- More monetization (2x XP, Power boost passes)
+- Mobile-friendly controls
 
-- Leaderstats (Cheese + Brainrots + Rebirths)
-- 15+ Brainrots με rarity & income
-- Automatic income every second
-- Buy system via RemoteEvent
-- Steal system (basic - click player to try steal)
-- Rebirth system (resets cheese for permanent multiplier)
-- DataStore saving (Cheese, Owned Brainrots, Rebirths)
-- Game Pass support (2x Cheese, VIP, etc.)
-- Developer Products (Cheese packs)
-- Simple Shop UI
-- Clean modular code
-
-## Next things you can ask me to add
-
-- Full tycoon plots (personal base)
-- Better steal with cooldown + risk
-- Mutations / Fusing brainrots
-- Daily rewards & codes
-- Better GUI with TweenService
-- Admin commands
-- More brainrots from current meta
-
-Just say the word and I push more code.
-
-**Repo:** https://github.com/894d6469bk-lang/Brainrot-Cheese-Roblox
+Let's print cheese. \ud83e\udda7\ud83d\udcb0
