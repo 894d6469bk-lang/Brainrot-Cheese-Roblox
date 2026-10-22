@@ -69,6 +69,7 @@ function CombatService.Transform(player: Player, brainrotName: string?): (boolea
 		player:SetAttribute("IsTransformed", false)
 		player:SetAttribute("TransformBrainrot", nil)
 		player:SetAttribute("TransformEnd", 0)
+		player:SetAttribute("TransformPowerMulti", 1)
 		return true, "De-transformed back to human"
 	end
 
@@ -179,15 +180,10 @@ function CombatService.Attack(attacker: Player, victimUserId: number): (boolean,
 
 	-- Calculate damage
 	local power = getPower(attacker)
-	local multi = player:GetAttribute("TransformPowerMulti") or 1
+	local multi = 1
 	if attacker:GetAttribute("IsTransformed") then
-		-- multi already set
-	else
-		multi = 1
+		multi = attacker:GetAttribute("TransformPowerMulti") or 1
 	end
-	-- fix: use attacker attribute
-	multi = attacker:GetAttribute("TransformPowerMulti") or 1
-	if not attacker:GetAttribute("IsTransformed") then multi = 1 end
 
 	local damage = math.floor((Config.BaseDamage + power * Config.DamagePerPower) * multi)
 
