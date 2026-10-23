@@ -1,58 +1,36 @@
-# \ud83d\udd25 Tung Tung Brainrot (Roblox)
+# Tung Tung Brainrot (Roblox)
 
 Viral brainrot tycoon + PvP. Currency = **Tung Tung Sahur Coin (TungCoin)**.
 
 ## Features
 
-### Economy
-- Collect brainrots \u2192 earn **TungCoins**/sec
-- Steal other players' brainrots
-- Rebirth for permanent multipliers
+### Core
+- Collect brainrots -> earn TungCoins/sec
+- Steal other players brainrots
+- Rebirth for multipliers
 - Offline earnings
 
-### Combat + Visual Morph
-- **TRANSFORM** into your strongest brainrot
-- Real visual morph: neon body color by rarity, scale up, particle aura, floating name tag
-- Farm XP (button + passive while transformed)
-- Level \u2192 Power
-- Attack & kill players for TungCoins + XP + steal Power
+### Combat + Morph
+- TRANSFORM into your strongest brainrot (neon body, scale, particles, name tag)
+- Farm XP (button + farm pads with ProximityPrompt)
+- Level up -> Power
+- Attack & kill for TungCoins + XP + Power steal
+- **Killstreak** bonuses
 
-### Gaamato Map (auto-built)
-`MapBuilder` runs on server start and creates:
-- Neon night atmosphere (fog + bloom)
-- Central **Tung Tung Arena** with pillars & monument
-- 8 player plots in a circle (bases)
+### Map
+- Neon night arena
+- 8 claimable player plots (ProximityPrompt "Claim Base")
 - Farm XP pads around the map
-- Spawn plaza
+- Lucky server events every ~90s (x3 income / x2 XP)
 
-Just hit Play \u2014 no manual map building needed for a solid test environment.
-
-## Structure
-```
-ServerScriptService/
-  Main.server.lua
-  Modules/ Config, BrainrotData, DataStoreService
-  Services/
-    MapBuilder.lua      <-- procedural map
-    PlayerService.lua
-    BrainrotService.lua
-    CombatService.lua    <-- morph + combat
-    MonetizationService.lua
-    RemoteService.lua
-StarterPlayer/StarterPlayerScripts/
-  ClientUI.client.lua
-```
-
-## Setup in Studio
+## Setup
 1. Copy folders into your place
-2. Enable API Services (DataStore)
-3. Play \u2014 map builds automatically
-4. Replace Game Pass / Dev Product IDs in Config.lua
+2. Experience Settings -> Security -> Enable Studio Access to API Services
+3. Play
 
-## Next upgrades
-- Real custom character models per brainrot (MeshParts / accessories)
-- Plot claiming system tied to player
-- Safe zones on plots
-- More map props & music
+## New scripts this update
+- EventService.lua (lucky events + killstreak)
+- PlotService.lua (claim bases)
+- ProximityService.lua (E prompts on pads)
 
-Print TungCoins. \ud83d\udd25\ud83d\udcb0
+Lock in. Print TungCoins.

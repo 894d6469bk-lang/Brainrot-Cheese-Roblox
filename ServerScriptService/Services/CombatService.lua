@@ -1,6 +1,6 @@
 --!strict
 --[[
-	CombatService - Transform + Visual Morph + Farm XP/Power + Kill
+	CombatService - Transform + Morph + Farm + Kill + Killstreak
 ]]
 
 local Players = game:GetService("Players")
@@ -11,13 +11,13 @@ local BrainrotData = require(script.Parent.Parent.Modules.BrainrotData)
 
 local CombatService = {}
 
-local function getLeaderstats(player: Player)
-	return player:FindFirstChild("leaderstats")
+-- lazy require to avoid circular
+local function getEventService()
+	return require(script.Parent.EventService)
 end
 
-local function getXP(player: Player): number
-	local ls = getLeaderstats(player)
-	return (ls and ls:FindFirstChild("XP") and ls.XP.Value) or 0
+local function getLeaderstats(player: Player)
+	return player:FindFirstChild("leaderstats")
 end
 
 local function getPower(player: Player): number
@@ -34,6 +34,12 @@ local function addXP(player: Player, amount: number)
 	local ls = getLeaderstats(player)
 	if not ls or not ls:FindFirstChild("XP") then return end
 
+	local multi = 1
+	pcall(function()
+		multi = getEventService().GetXPMulti()
+	end)
+	amount = math.floor(amount * multi)
+
 	ls.XP.Value += amount
 
 	local needed = getLevel(player) * Config.XPPerLevelBase
@@ -47,7 +53,7 @@ local function addXP(player: Player, amount: number)
 
 		local remotes = ReplicatedStorage:FindFirstChild("Remotes")
 		if remotes and remotes:FindFirstChild("Notify") then
-			remotes.Notify:FireClient(player, "Success", "LEVEL UP! Now Level " .. ls.Level.Value .. " | Power +" .. Config.PowerPerLevel)
+			remotes.Notify:FireClient(player, "Success", "LEVEL UP! Level " .. ls.Level.Value .. " | Power +" .. Config.PowerPerLevel)
 		end
 	end
 end
@@ -136,7 +142,6 @@ local function applyVisualMorph(player: Player, brainrotName: string, rarity: st
 		attachment.Parent = hrp
 
 		local particles = Instance.new("ParticleEmitter")
-		particles.Name = "AuraParticles"
 		particles.Color = ColorSequence.new(color)
 		particles.Size = NumberSequence.new({
 			NumberSequenceKeypoint.new(0, 0.8),
@@ -215,7 +220,6 @@ task.spawn(function()
 					player:SetAttribute("TransformBrainrot", nil)
 					player:SetAttribute("TransformPowerMulti", 1)
 					clearMorph(player)
-
 					local remotes = ReplicatedStorage:FindFirstChild("Remotes")
 					if remotes and remotes:FindFirstChild("Notify") then
 						remotes.Notify:FireClient(player, "Error", "Transform ended. Farm more XP!")
@@ -285,13 +289,22 @@ function CombatService.Attack(attacker: Player, victimUserId: number): (boolean,
 	humanoid:TakeDamage(damage)
 
 	if humanoid.Health <= 0 then
+		local streakBonus = 1
+		pcall(function()
+			streakBonus = getEventService().RegisterKill(attacker)
+		end)
+		pcall(function()
+			getEventService().ResetKillstreak(victim)
+		end)
+
 		local aLS = getLeaderstats(attacker)
 		local vLS = getLeaderstats(victim)
 
+		local coinReward = math.floor(Config.KillTungCoinReward * streakBonus)
 		if aLS and aLS:FindFirstChild("TungCoin") then
-			aLS.TungCoin.Value += Config.KillTungCoinReward
+			aLS.TungCoin.Value += coinReward
 		end
-		addXP(attacker, Config.KillXPReward)
+		addXP(attacker, math.floor(Config.KillXPReward * streakBonus))
 
 		if aLS and aLS:FindFirstChild("Power") and vLS and vLS:FindFirstChild("Power") then
 			local stolen = math.min(Config.KillPowerSteal, vLS.Power.Value)
@@ -306,24 +319,23 @@ function CombatService.Attack(attacker: Player, victimUserId: number): (boolean,
 
 		local remotes = ReplicatedStorage:FindFirstChild("Remotes")
 		if remotes and remotes:FindFirstChild("Notify") then
-			remotes.Notify:FireClient(attacker, "Success", "KILLED " .. victim.Name .. "! +" .. Config.KillTungCoinReward .. " TungCoins +" .. Config.KillXPReward .. " XP")
-			remotes.Notify:FireClient(victim, "Error", attacker.Name .. " killed you! Lost some TungCoins...")
+			remotes.Notify:FireClient(attacker, "Success", "KILLED " .. victim.Name .. "! +" .. coinReward .. " TungCoins")
+			remotes.Notify:FireClient(victim, "Error", attacker.Name .. " killed you!")
 		end
 
-		return true, "KILL! You destroyed " .. victim.Name
+		return true, "KILL! " .. victim.Name
 	end
 
-	return true, "Hit " .. victim.Name .. " for " .. damage .. " damage! (HP left: " .. math.floor(humanoid.Health) .. ")"
+	return true, "Hit " .. victim.Name .. " for " .. damage .. " dmg"
 end
 
 function CombatService.GetStats(player: Player)
 	return {
-		XP = getXP(player),
+		XP = getLeaderstats(player) and getLeaderstats(player).XP and getLeaderstats(player).XP.Value or 0,
 		Power = getPower(player),
 		Level = getLevel(player),
 		IsTransformed = player:GetAttribute("IsTransformed") or false,
 		TransformBrainrot = player:GetAttribute("TransformBrainrot"),
-		TransformEnd = player:GetAttribute("TransformEnd") or 0,
 	}
 end
 

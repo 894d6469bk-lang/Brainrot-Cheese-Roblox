@@ -4,6 +4,7 @@ local Players = game:GetService("Players")
 
 local BrainrotService = require(script.Parent.BrainrotService)
 local CombatService = require(script.Parent.CombatService)
+local PlotService = require(script.Parent.PlotService)
 local BrainrotData = require(script.Parent.Parent.Modules.BrainrotData)
 
 local remotes = ReplicatedStorage:FindFirstChild("Remotes")
@@ -31,7 +32,7 @@ local NotifyRE = getOrCreateRemote("Notify")
 local TransformRE = getOrCreateRemote("Transform")
 local FarmXPRE = getOrCreateRemote("FarmXP")
 local AttackRE = getOrCreateRemote("Attack")
-local GetCombatStatsRE = getOrCreateRemote("GetCombatStats")
+local ClaimPlotRE = getOrCreateRemote("ClaimPlot")
 
 BuyBrainrotRE.OnServerEvent:Connect(function(player, brainrotName)
 	if typeof(brainrotName) ~= "string" then return end
@@ -78,8 +79,10 @@ AttackRE.OnServerEvent:Connect(function(player, victimUserId)
 	NotifyRE:FireClient(player, success and "Success" or "Error", msg)
 end)
 
-GetCombatStatsRE.OnServerEvent:Connect(function(player)
-	GetCombatStatsRE:FireClient(player, CombatService.GetStats(player))
+ClaimPlotRE.OnServerEvent:Connect(function(player, plotId)
+	if typeof(plotId) ~= "number" then return end
+	local success, msg = PlotService.Claim(player, plotId)
+	NotifyRE:FireClient(player, success and "Success" or "Error", msg)
 end)
 
 print("RemoteService ready")

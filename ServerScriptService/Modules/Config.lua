@@ -1,37 +1,35 @@
 --!strict
 local Config = {}
 
--- Currency is now TUNG TUNG SAHUR COIN (TungCoin)
 Config.StartingTungCoin = 150
 Config.StarterBrainrot = "Noobini Pizzanini"
 Config.BaseIncomeTick = 1
 
--- Offline earnings
 Config.OfflineIncomeCapHours = 8
 Config.OfflineIncomeMultiplier = 0.6
 
--- Rebirth
 Config.RebirthRequirement = 75000
 Config.RebirthMultiplierPerLevel = 0.3
 
--- Steal
-Config.StealCooldown = 25
-Config.StealSuccessChance = 0.40
+Config.StealCooldown = 20
+Config.StealSuccessChance = 0.45
 Config.StealProtectionPassReduces = 0.15
 
--- Lucky / Event
-Config.LuckyEventChancePerMinute = 0.08
-Config.LuckyBlockRewardMultiplier = 3
+-- Lucky events
+Config.LuckyEventIntervalSeconds = 90
+Config.LuckyEventDuration = 30
+Config.LuckyEventIncomeMulti = 3
+Config.LuckyEventXPMulti = 2
 
--- Combat / Power
+-- Combat
 Config.StartingXP = 0
 Config.StartingPower = 10
 Config.StartingLevel = 1
 Config.XPPerLevelBase = 100
 Config.PowerPerLevel = 8
 
-Config.TransformCooldown = 15
-Config.TransformDuration = 45
+Config.TransformCooldown = 12
+Config.TransformDuration = 50
 Config.TransformPowerMultiplier = {
 	Common = 1.2,
 	Rare = 1.5,
@@ -42,18 +40,23 @@ Config.TransformPowerMultiplier = {
 }
 
 Config.PassiveXPPerSecond = 2
-Config.FarmXPAmount = 25
-Config.FarmCooldown = 3
+Config.FarmXPAmount = 30
+Config.FarmCooldown = 2
+Config.FarmPadBonusXP = 50
 
-Config.AttackCooldown = 1.2
-Config.BaseDamage = 15
-Config.DamagePerPower = 0.4
-Config.KillTungCoinReward = 350
-Config.KillXPReward = 80
-Config.KillPowerSteal = 3
-Config.DeathTungCoinLossPercent = 0.08
+Config.AttackCooldown = 1.0
+Config.BaseDamage = 18
+Config.DamagePerPower = 0.45
+Config.KillTungCoinReward = 400
+Config.KillXPReward = 100
+Config.KillPowerSteal = 4
+Config.DeathTungCoinLossPercent = 0.07
 
--- Visual Morph colors by rarity
+-- Killstreak
+Config.KillstreakTimeout = 20
+Config.KillstreakBonusPerKill = 0.25
+Config.KillstreakMaxBonus = 3.0
+
 Config.MorphColors = {
 	Common = Color3.fromRGB(180, 180, 180),
 	Rare = Color3.fromRGB(80, 160, 255),
@@ -72,7 +75,6 @@ Config.MorphScale = {
 	Secret = 2.2,
 }
 
--- Game Passes (replace 0 with real IDs)
 Config.GamePasses = {
 	DoubleTungCoin = 0,
 	VIP = 0,
