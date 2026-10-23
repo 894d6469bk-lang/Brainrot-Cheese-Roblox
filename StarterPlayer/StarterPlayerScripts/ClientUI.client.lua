@@ -45,9 +45,10 @@ stroke.Thickness = 2
 stroke.Parent = main
 
 local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 1, 0)
 title.Size = UDim2.new(1, 0, 0, 38)
 title.BackgroundTransparency = 1
-title.Text = "\ud83d\udd25 TUNG TUNG BRAINROT"
+title.Text = "TUNG TUNG BRAINROT"
 title.TextColor3 = Color3.fromRGB(0, 255, 200)
 title.Font = Enum.Font.GothamBlack
 title.TextSize = 18
@@ -213,7 +214,7 @@ task.spawn(function()
 			local rebirths = ls:FindFirstChild("Rebirths") and ls.Rebirths.Value or 0
 			local transformText = ""
 			if player:GetAttribute("IsTransformed") then
-				transformText = " | \ud83d\udd25 " .. (player:GetAttribute("TransformBrainrot") or "BRAINROT")
+				transformText = " | " .. (player:GetAttribute("TransformBrainrot") or "BRAINROT")
 			end
 			coinLabel.Text = "TungCoins: " .. coin .. "  |  Rebirths: " .. rebirths .. "\nLvl " .. level .. " | XP " .. xp .. " | Power " .. power .. transformText
 		end

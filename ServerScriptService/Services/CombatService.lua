@@ -5,7 +5,6 @@
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TweenService = game:GetService("TweenService")
 
 local Config = require(script.Parent.Parent.Modules.Config)
 local BrainrotData = require(script.Parent.Parent.Modules.BrainrotData)
@@ -53,34 +52,32 @@ local function addXP(player: Player, amount: number)
 	end
 end
 
--- ========== VISUAL MORPH ==========
 local function clearMorph(player: Player)
 	local char = player.Character
 	if not char then return end
 
-	-- remove aura / billboard
 	local aura = char:FindFirstChild("BrainrotAura")
 	if aura then aura:Destroy() end
 	local tag = char:FindFirstChild("BrainrotTag")
 	if tag then tag:Destroy() end
 
-	-- reset scale
 	local humanoid = char:FindFirstChildOfClass("Humanoid")
 	if humanoid then
-		humanoid:SetStateEnabled(Enum.HumanoidStateType.Physics, true)
-		local scale = char:FindFirstChild("Humanoid") and humanoid
 		pcall(function()
-			if humanoid.BodyDepthScale then humanoid.BodyDepthScale.Value = 1 end
-			if humanoid.BodyHeightScale then humanoid.BodyHeightScale.Value = 1 end
-			if humanoid.BodyWidthScale then humanoid.BodyWidthScale.Value = 1 end
-			if humanoid.HeadScale then humanoid.HeadScale.Value = 1 end
+			local function setScale(name, val)
+				local obj = humanoid:FindFirstChild(name)
+				if obj and obj:IsA("NumberValue") then obj.Value = val end
+			end
+			setScale("BodyDepthScale", 1)
+			setScale("BodyHeightScale", 1)
+			setScale("BodyWidthScale", 1)
+			setScale("HeadScale", 1)
 		end)
 	end
 
-	-- reset body colors
 	for _, part in ipairs(char:GetChildren()) do
 		if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-			part.Color = Color3.fromRGB(163, 162, 165) -- defaultish
+			part.Color = Color3.fromRGB(163, 162, 165)
 			part.Material = Enum.Material.Plastic
 		end
 	end
@@ -97,13 +94,10 @@ local function applyVisualMorph(player: Player, brainrotName: string, rarity: st
 	local color = Config.MorphColors[rarity] or Color3.fromRGB(255, 255, 255)
 	local scaleMul = Config.MorphScale[rarity] or 1.2
 
-	-- Scale body (R15 scale values)
 	pcall(function()
 		local function setScale(name, val)
 			local obj = humanoid:FindFirstChild(name)
-			if obj and obj:IsA("NumberValue") then
-				obj.Value = val
-			end
+			if obj and obj:IsA("NumberValue") then obj.Value = val end
 		end
 		setScale("BodyDepthScale", scaleMul)
 		setScale("BodyHeightScale", scaleMul)
@@ -111,7 +105,6 @@ local function applyVisualMorph(player: Player, brainrotName: string, rarity: st
 		setScale("HeadScale", math.min(scaleMul * 1.15, 2.5))
 	end)
 
-	-- Color all body parts neon-ish
 	for _, part in ipairs(char:GetChildren()) do
 		if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
 			part.Color = color
@@ -119,7 +112,6 @@ local function applyVisualMorph(player: Player, brainrotName: string, rarity: st
 		end
 	end
 
-	-- Floating name tag
 	local hrp = char:FindFirstChild("HumanoidRootPart")
 	if hrp then
 		local bb = Instance.new("BillboardGui")
@@ -132,14 +124,13 @@ local function applyVisualMorph(player: Player, brainrotName: string, rarity: st
 		local label = Instance.new("TextLabel")
 		label.Size = UDim2.new(1, 0, 1, 0)
 		label.BackgroundTransparency = 1
-		label.Text = "\ud83d\udd25 " .. brainrotName
+		label.Text = brainrotName
 		label.TextColor3 = color
 		label.TextStrokeTransparency = 0.3
 		label.Font = Enum.Font.GothamBold
 		label.TextScaled = true
 		label.Parent = bb
 
-		-- Particle aura
 		local attachment = Instance.new("Attachment")
 		attachment.Name = "BrainrotAura"
 		attachment.Parent = hrp
@@ -160,7 +151,6 @@ local function applyVisualMorph(player: Player, brainrotName: string, rarity: st
 	end
 end
 
--- ========== TRANSFORM ==========
 function CombatService.Transform(player: Player, brainrotName: string?): (boolean, string)
 	local now = os.time()
 	local last = player:GetAttribute("LastTransform") or 0
@@ -208,7 +198,6 @@ function CombatService.Transform(player: Player, brainrotName: string?): (boolea
 	local multi = Config.TransformPowerMultiplier[data.Rarity] or 1.2
 	player:SetAttribute("TransformPowerMulti", multi)
 
-	-- VISUAL MORPH
 	applyVisualMorph(player, chosen, data.Rarity)
 
 	return true, "TRANSFORMED into " .. chosen .. "! Power x" .. multi .. " for " .. Config.TransformDuration .. "s"
@@ -338,7 +327,6 @@ function CombatService.GetStats(player: Player)
 	}
 end
 
--- Re-apply morph if character respawns while transformed
 Players.PlayerAdded:Connect(function(player)
 	player.CharacterAdded:Connect(function()
 		task.wait(0.5)

@@ -1,12 +1,6 @@
 --!strict
 --[[
-	MapBuilder - Procedural gaamato brainrot map
-	Runs once on server start. Creates:
-	- Neon central PvP Arena
-	- 8 player plot bases in a circle
-	- Farm pads (XP zones)
-	- Spawn plaza with Tung Tung vibe
-	- Atmosphere lighting + fog
+	MapBuilder - Procedural brainrot map
 ]]
 
 local Lighting = game:GetService("Lighting")
@@ -32,7 +26,6 @@ local function neonPart(props)
 end
 
 function MapBuilder.Build()
-	-- Clear default baseplate if present
 	local baseplate = Workspace:FindFirstChild("Baseplate")
 	if baseplate then baseplate:Destroy() end
 
@@ -42,8 +35,8 @@ function MapBuilder.Build()
 	mapFolder.Name = "BrainrotMap"
 	mapFolder.Parent = Workspace
 
-	-- ========== GROUND ==========
-	local ground = part({
+	-- Ground
+	part({
 		Name = "Ground",
 		Size = Vector3.new(600, 4, 600),
 		Position = Vector3.new(0, -2, 0),
@@ -52,9 +45,9 @@ function MapBuilder.Build()
 		Parent = mapFolder,
 	})
 
-	-- Grid neon lines on ground (visual)
+	-- Grid lines
 	for i = -5, 5 do
-		local lineX = neonPart({
+		neonPart({
 			Name = "GridX",
 			Size = Vector3.new(580, 0.2, 1.5),
 			Position = Vector3.new(0, 0.2, i * 50),
@@ -63,7 +56,7 @@ function MapBuilder.Build()
 			CanCollide = false,
 			Parent = mapFolder,
 		})
-		local lineZ = neonPart({
+		neonPart({
 			Name = "GridZ",
 			Size = Vector3.new(1.5, 0.2, 580),
 			Position = Vector3.new(i * 50, 0.2, 0),
@@ -74,20 +67,9 @@ function MapBuilder.Build()
 		})
 	end
 
-	-- ========== CENTRAL ARENA (PvP) ==========
+	-- Arena floor
 	local arenaRadius = 55
-	local arenaFloor = neonPart({
-		Name = "ArenaFloor",
-		Size = Vector3.new(arenaRadius * 2, 1, arenaRadius * 2),
-		Position = Vector3.new(0, 0.5, 0),
-		Color = Color3.fromRGB(40, 10, 50),
-		Shape = Enum.PartType.Cylinder,
-		Orientation = Vector3.new(0, 0, 90),
-		Parent = mapFolder,
-	})
-	-- fix cylinder orientation - use Block with round look instead
-	arenaFloor:Destroy()
-	arenaFloor = part({
+	part({
 		Name = "ArenaFloor",
 		Size = Vector3.new(arenaRadius * 2, 1.2, arenaRadius * 2),
 		Position = Vector3.new(0, 0.6, 0),
@@ -96,8 +78,7 @@ function MapBuilder.Build()
 		Parent = mapFolder,
 	})
 
-	-- Arena ring (neon)
-	local ring = neonPart({
+	neonPart({
 		Name = "ArenaRing",
 		Size = Vector3.new(arenaRadius * 2 + 4, 3, arenaRadius * 2 + 4),
 		Position = Vector3.new(0, 1.5, 0),
@@ -106,17 +87,8 @@ function MapBuilder.Build()
 		CanCollide = false,
 		Parent = mapFolder,
 	})
-	-- hollow effect: smaller inner transparent
-	local ringInner = part({
-		Name = "ArenaRingInner",
-		Size = Vector3.new(arenaRadius * 2 - 2, 3.5, arenaRadius * 2 - 2),
-		Position = Vector3.new(0, 1.5, 0),
-		Transparency = 1,
-		CanCollide = false,
-		Parent = mapFolder,
-	})
 
-	-- Arena pillars
+	-- Pillars
 	for i = 0, 7 do
 		local angle = (i / 8) * math.pi * 2
 		local x = math.cos(angle) * (arenaRadius + 2)
@@ -130,7 +102,7 @@ function MapBuilder.Build()
 		})
 	end
 
-	-- Center monument (Tung Tung vibe)
+	-- Monument
 	local monument = neonPart({
 		Name = "TungMonument",
 		Size = Vector3.new(8, 22, 8),
@@ -138,7 +110,7 @@ function MapBuilder.Build()
 		Color = Color3.fromRGB(0, 255, 200),
 		Parent = mapFolder,
 	})
-	local monTop = neonPart({
+	neonPart({
 		Name = "MonumentTop",
 		Size = Vector3.new(14, 3, 14),
 		Position = Vector3.new(0, 23, 0),
@@ -146,7 +118,6 @@ function MapBuilder.Build()
 		Parent = mapFolder,
 	})
 
-	-- Billboard on monument
 	local bb = Instance.new("BillboardGui")
 	bb.Size = UDim2.new(0, 300, 0, 80)
 	bb.StudsOffset = Vector3.new(0, 14, 0)
@@ -155,14 +126,14 @@ function MapBuilder.Build()
 	local title = Instance.new("TextLabel")
 	title.Size = UDim2.new(1, 0, 1, 0)
 	title.BackgroundTransparency = 1
-	title.Text = "\ud83d\udd25 TUNG TUNG ARENA \ud83d\udd25"
+	title.Text = "TUNG TUNG ARENA"
 	title.TextColor3 = Color3.fromRGB(0, 255, 200)
 	title.TextStrokeTransparency = 0.2
 	title.Font = Enum.Font.GothamBlack
 	title.TextScaled = true
 	title.Parent = bb
 
-	-- ========== PLAYER PLOTS (8 bases in circle) ==========
+	-- 8 Plots
 	local plotDistance = 140
 	local plotSize = 40
 	for i = 0, 7 do
@@ -174,7 +145,6 @@ function MapBuilder.Build()
 		plotFolder.Name = "Plot_" .. (i + 1)
 		plotFolder.Parent = mapFolder
 
-		-- Plot floor
 		part({
 			Name = "PlotFloor",
 			Size = Vector3.new(plotSize, 1.5, plotSize),
@@ -184,7 +154,6 @@ function MapBuilder.Build()
 			Parent = plotFolder,
 		})
 
-		-- Plot border neon
 		neonPart({
 			Name = "PlotBorder",
 			Size = Vector3.new(plotSize + 2, 0.4, plotSize + 2),
@@ -195,7 +164,6 @@ function MapBuilder.Build()
 			Parent = plotFolder,
 		})
 
-		-- Small house / base structure
 		part({
 			Name = "BaseWall",
 			Size = Vector3.new(18, 12, 2),
@@ -212,7 +180,6 @@ function MapBuilder.Build()
 			Parent = plotFolder,
 		})
 
-		-- Claim pad
 		local pad = neonPart({
 			Name = "ClaimPad",
 			Size = Vector3.new(10, 0.5, 10),
@@ -223,7 +190,7 @@ function MapBuilder.Build()
 		pad:SetAttribute("PlotId", i + 1)
 	end
 
-	-- ========== FARM ZONES (XP pads) ==========
+	-- Farm pads
 	local farmPositions = {
 		Vector3.new(90, 1, 90),
 		Vector3.new(-90, 1, 90),
@@ -250,14 +217,14 @@ function MapBuilder.Build()
 		local fl = Instance.new("TextLabel")
 		fl.Size = UDim2.new(1, 0, 1, 0)
 		fl.BackgroundTransparency = 1
-		fl.Text = "\u26a1 FARM XP"
+		fl.Text = "FARM XP"
 		fl.TextColor3 = Color3.fromRGB(100, 220, 255)
 		fl.Font = Enum.Font.GothamBold
 		fl.TextScaled = true
 		fl.Parent = farmBB
 	end
 
-	-- ========== SPAWN ==========
+	-- Spawn
 	local spawnLoc = Instance.new("SpawnLocation")
 	spawnLoc.Name = "MainSpawn"
 	spawnLoc.Size = Vector3.new(16, 1, 16)
@@ -269,7 +236,6 @@ function MapBuilder.Build()
 	spawnLoc.Neutral = true
 	spawnLoc.Parent = mapFolder
 
-	-- Spawn platform
 	part({
 		Name = "SpawnPlatform",
 		Size = Vector3.new(30, 1.5, 30),
@@ -278,17 +244,16 @@ function MapBuilder.Build()
 		Parent = mapFolder,
 	})
 
-	-- ========== LIGHTING / ATMOSPHERE ==========
+	-- Lighting
 	Lighting.Brightness = 1.5
 	Lighting.Ambient = Color3.fromRGB(40, 30, 60)
 	Lighting.OutdoorAmbient = Color3.fromRGB(50, 35, 70)
 	Lighting.FogColor = Color3.fromRGB(30, 15, 45)
 	Lighting.FogEnd = 400
 	Lighting.FogStart = 80
-	Lighting.ClockTime = 22 -- night vibe
+	Lighting.ClockTime = 22
 	Lighting.GlobalShadows = true
 
-	-- Atmosphere
 	local atmo = Lighting:FindFirstChildOfClass("Atmosphere")
 	if not atmo then
 		atmo = Instance.new("Atmosphere")
@@ -300,7 +265,6 @@ function MapBuilder.Build()
 	atmo.Glare = 0.3
 	atmo.Haze = 1.5
 
-	-- Bloom for neon glow
 	local bloom = Lighting:FindFirstChildOfClass("BloomEffect")
 	if not bloom then
 		bloom = Instance.new("BloomEffect")
@@ -310,10 +274,9 @@ function MapBuilder.Build()
 	bloom.Size = 24
 	bloom.Threshold = 0.85
 
-	print("\ud83c\udf0c Brainrot Map BUILT - Arena + 8 Plots + Farm Pads + Neon night vibe")
+	print("Brainrot Map BUILT - Arena + 8 Plots + Farm Pads + Neon night vibe")
 end
 
--- Auto build on require
 MapBuilder.Build()
 
 return MapBuilder
