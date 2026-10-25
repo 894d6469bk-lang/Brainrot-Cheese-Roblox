@@ -1,6 +1,7 @@
 --!strict
-print("Loading Tung Tung Brainrot...")
+print("[Main] Loading Tung Tung Brainrot...")
 
+-- Map first so prompts can attach
 require(script.Parent.Services.MapBuilder)
 require(script.Parent.Services.PlayerService)
 require(script.Parent.Services.BrainrotService)
@@ -11,4 +12,4 @@ require(script.Parent.Services.ProximityService)
 require(script.Parent.Services.MonetizationService)
 require(script.Parent.Services.RemoteService)
 
-print("TUNG TUNG SAHUR COIN live. Plots. Lucky Events. Killstreaks. GO VIRAL.")
+print("[Main] READY - Transform, Farm [E], Claim [E], Kill, Lucky Events")

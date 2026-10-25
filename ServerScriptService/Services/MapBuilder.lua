@@ -1,6 +1,6 @@
 --!strict
 --[[
-	MapBuilder - Procedural brainrot map
+	Clean neon map - clear visibility, no heavy fog
 ]]
 
 local Lighting = game:GetService("Lighting")
@@ -8,275 +8,281 @@ local Workspace = game:GetService("Workspace")
 
 local MapBuilder = {}
 
-local function part(props)
+local function makePart(props: {[string]: any}): Part
 	local p = Instance.new("Part")
 	p.Anchored = true
-	p.CanCollide = true
+	p.CanCollide = if props.CanCollide == nil then true else props.CanCollide
 	p.TopSurface = Enum.SurfaceType.Smooth
 	p.BottomSurface = Enum.SurfaceType.Smooth
+	p.Material = props.Material or Enum.Material.SmoothPlastic
 	for k, v in pairs(props) do
-		p[k] = v
+		if k ~= "Material" and k ~= "CanCollide" then
+			(p :: any)[k] = v
+		end
 	end
 	return p
 end
 
-local function neonPart(props)
-	props.Material = Enum.Material.Neon
-	return part(props)
-end
-
 function MapBuilder.Build()
-	local baseplate = Workspace:FindFirstChild("Baseplate")
-	if baseplate then baseplate:Destroy() end
+	local old = Workspace:FindFirstChild("Baseplate")
+	if old then old:Destroy() end
+	local oldMap = Workspace:FindFirstChild("BrainrotMap")
+	if oldMap then oldMap:Destroy() end
 
-	local mapFolder = Workspace:FindFirstChild("BrainrotMap")
-	if mapFolder then mapFolder:Destroy() end
-	mapFolder = Instance.new("Folder")
-	mapFolder.Name = "BrainrotMap"
-	mapFolder.Parent = Workspace
+	local map = Instance.new("Folder")
+	map.Name = "BrainrotMap"
+	map.Parent = Workspace
 
-	-- Ground
-	part({
+	-- Ground (dark but clear)
+	makePart({
 		Name = "Ground",
-		Size = Vector3.new(600, 4, 600),
-		Position = Vector3.new(0, -2, 0),
-		Color = Color3.fromRGB(20, 18, 30),
-		Material = Enum.Material.SmoothPlastic,
-		Parent = mapFolder,
+		Size = Vector3.new(500, 3, 500),
+		Position = Vector3.new(0, -1.5, 0),
+		Color = Color3.fromRGB(25, 22, 35),
+		Parent = map,
 	})
 
-	-- Grid lines
-	for i = -5, 5 do
-		neonPart({
-			Name = "GridX",
-			Size = Vector3.new(580, 0.2, 1.5),
-			Position = Vector3.new(0, 0.2, i * 50),
-			Color = Color3.fromRGB(60, 20, 90),
-			Transparency = 0.55,
+	-- Subtle grid
+	for i = -4, 4 do
+		makePart({
+			Name = "Grid",
+			Size = Vector3.new(480, 0.15, 1),
+			Position = Vector3.new(0, 0.1, i * 55),
+			Color = Color3.fromRGB(80, 40, 120),
+			Material = Enum.Material.Neon,
+			Transparency = 0.7,
 			CanCollide = false,
-			Parent = mapFolder,
+			Parent = map,
 		})
-		neonPart({
-			Name = "GridZ",
-			Size = Vector3.new(1.5, 0.2, 580),
-			Position = Vector3.new(i * 50, 0.2, 0),
-			Color = Color3.fromRGB(60, 20, 90),
-			Transparency = 0.55,
+		makePart({
+			Name = "Grid",
+			Size = Vector3.new(1, 0.15, 480),
+			Position = Vector3.new(i * 55, 0.1, 0),
+			Color = Color3.fromRGB(80, 40, 120),
+			Material = Enum.Material.Neon,
+			Transparency = 0.7,
 			CanCollide = false,
-			Parent = mapFolder,
+			Parent = map,
 		})
 	end
 
 	-- Arena floor
-	local arenaRadius = 55
-	part({
+	local arenaR = 50
+	makePart({
 		Name = "ArenaFloor",
-		Size = Vector3.new(arenaRadius * 2, 1.2, arenaRadius * 2),
-		Position = Vector3.new(0, 0.6, 0),
-		Color = Color3.fromRGB(35, 12, 45),
-		Material = Enum.Material.SmoothPlastic,
-		Parent = mapFolder,
+		Size = Vector3.new(arenaR * 2, 1, arenaR * 2),
+		Position = Vector3.new(0, 0.5, 0),
+		Color = Color3.fromRGB(40, 15, 55),
+		Parent = map,
 	})
 
-	neonPart({
-		Name = "ArenaRing",
-		Size = Vector3.new(arenaRadius * 2 + 4, 3, arenaRadius * 2 + 4),
-		Position = Vector3.new(0, 1.5, 0),
-		Color = Color3.fromRGB(255, 40, 120),
-		Transparency = 0.3,
+	-- Arena border glow
+	makePart({
+		Name = "ArenaBorder",
+		Size = Vector3.new(arenaR * 2 + 3, 2, arenaR * 2 + 3),
+		Position = Vector3.new(0, 1, 0),
+		Color = Color3.fromRGB(255, 50, 140),
+		Material = Enum.Material.Neon,
+		Transparency = 0.4,
 		CanCollide = false,
-		Parent = mapFolder,
+		Parent = map,
 	})
 
-	-- Pillars
+	-- 8 pillars
 	for i = 0, 7 do
-		local angle = (i / 8) * math.pi * 2
-		local x = math.cos(angle) * (arenaRadius + 2)
-		local z = math.sin(angle) * (arenaRadius + 2)
-		neonPart({
-			Name = "ArenaPillar",
-			Size = Vector3.new(4, 18, 4),
-			Position = Vector3.new(x, 9, z),
-			Color = Color3.fromRGB(255, 60 + i * 10, 150),
-			Parent = mapFolder,
+		local a = (i / 8) * math.pi * 2
+		local x = math.cos(a) * (arenaR + 1)
+		local z = math.sin(a) * (arenaR + 1)
+		makePart({
+			Name = "Pillar",
+			Size = Vector3.new(3.5, 16, 3.5),
+			Position = Vector3.new(x, 8, z),
+			Color = Color3.fromRGB(255, 70 + i * 12, 160),
+			Material = Enum.Material.Neon,
+			Parent = map,
 		})
 	end
 
-	-- Monument
-	local monument = neonPart({
-		Name = "TungMonument",
-		Size = Vector3.new(8, 22, 8),
-		Position = Vector3.new(0, 11, 0),
+	-- Center monument
+	local mon = makePart({
+		Name = "Monument",
+		Size = Vector3.new(7, 20, 7),
+		Position = Vector3.new(0, 10, 0),
 		Color = Color3.fromRGB(0, 255, 200),
-		Parent = mapFolder,
+		Material = Enum.Material.Neon,
+		Parent = map,
 	})
-	neonPart({
-		Name = "MonumentTop",
-		Size = Vector3.new(14, 3, 14),
-		Position = Vector3.new(0, 23, 0),
-		Color = Color3.fromRGB(255, 200, 50),
-		Parent = mapFolder,
+	makePart({
+		Name = "MonTop",
+		Size = Vector3.new(12, 2.5, 12),
+		Position = Vector3.new(0, 21, 0),
+		Color = Color3.fromRGB(255, 210, 40),
+		Material = Enum.Material.Neon,
+		Parent = map,
 	})
 
 	local bb = Instance.new("BillboardGui")
-	bb.Size = UDim2.new(0, 300, 0, 80)
-	bb.StudsOffset = Vector3.new(0, 14, 0)
+	bb.Size = UDim2.fromOffset(280, 70)
+	bb.StudsOffset = Vector3.new(0, 12, 0)
 	bb.AlwaysOnTop = true
-	bb.Parent = monument
-	local title = Instance.new("TextLabel")
-	title.Size = UDim2.new(1, 0, 1, 0)
-	title.BackgroundTransparency = 1
-	title.Text = "TUNG TUNG ARENA"
-	title.TextColor3 = Color3.fromRGB(0, 255, 200)
-	title.TextStrokeTransparency = 0.2
-	title.Font = Enum.Font.GothamBlack
-	title.TextScaled = true
-	title.Parent = bb
+	bb.Parent = mon
+	local tl = Instance.new("TextLabel")
+	tl.Size = UDim2.fromScale(1, 1)
+	tl.BackgroundTransparency = 1
+	tl.Text = "TUNG TUNG ARENA"
+	tl.TextColor3 = Color3.fromRGB(0, 255, 200)
+	tl.Font = Enum.Font.GothamBlack
+	tl.TextScaled = true
+	tl.Parent = bb
 
-	-- 8 Plots
-	local plotDistance = 140
-	local plotSize = 40
+	-- 8 plots
+	local plotDist = 125
 	for i = 0, 7 do
-		local angle = (i / 8) * math.pi * 2 + math.pi / 8
-		local x = math.cos(angle) * plotDistance
-		local z = math.sin(angle) * plotDistance
+		local a = (i / 8) * math.pi * 2 + math.pi / 8
+		local x = math.cos(a) * plotDist
+		local z = math.sin(a) * plotDist
+		local folder = Instance.new("Folder")
+		folder.Name = "Plot_" .. (i + 1)
+		folder.Parent = map
 
-		local plotFolder = Instance.new("Folder")
-		plotFolder.Name = "Plot_" .. (i + 1)
-		plotFolder.Parent = mapFolder
-
-		part({
+		makePart({
 			Name = "PlotFloor",
-			Size = Vector3.new(plotSize, 1.5, plotSize),
-			Position = Vector3.new(x, 0.75, z),
-			Color = Color3.fromRGB(30, 25, 45),
-			Material = Enum.Material.SmoothPlastic,
-			Parent = plotFolder,
+			Size = Vector3.new(36, 1.2, 36),
+			Position = Vector3.new(x, 0.6, z),
+			Color = Color3.fromRGB(32, 28, 48),
+			Parent = folder,
 		})
 
-		neonPart({
-			Name = "PlotBorder",
-			Size = Vector3.new(plotSize + 2, 0.4, plotSize + 2),
-			Position = Vector3.new(x, 1.6, z),
-			Color = Color3.fromRGB(120 + i * 15, 40, 255),
-			Transparency = 0.4,
-			CanCollide = false,
-			Parent = plotFolder,
-		})
-
-		part({
-			Name = "BaseWall",
-			Size = Vector3.new(18, 12, 2),
-			Position = Vector3.new(x, 7, z - 12),
-			Color = Color3.fromRGB(45, 35, 70),
-			Parent = plotFolder,
-		})
-		part({
-			Name = "BaseRoof",
-			Size = Vector3.new(20, 2, 16),
-			Position = Vector3.new(x, 14, z - 6),
-			Color = Color3.fromRGB(255, 80, 140),
+		makePart({
+			Name = "PlotEdge",
+			Size = Vector3.new(38, 0.3, 38),
+			Position = Vector3.new(x, 1.3, z),
+			Color = Color3.fromRGB(130 + i * 12, 50, 255),
 			Material = Enum.Material.Neon,
-			Parent = plotFolder,
+			Transparency = 0.35,
+			CanCollide = false,
+			Parent = folder,
 		})
 
-		local pad = neonPart({
+		makePart({
+			Name = "House",
+			Size = Vector3.new(14, 10, 2),
+			Position = Vector3.new(x, 5.5, z - 10),
+			Color = Color3.fromRGB(50, 40, 75),
+			Parent = folder,
+		})
+		makePart({
+			Name = "Roof",
+			Size = Vector3.new(16, 1.5, 12),
+			Position = Vector3.new(x, 11, z - 5),
+			Color = Color3.fromRGB(255, 90, 150),
+			Material = Enum.Material.Neon,
+			Parent = folder,
+		})
+
+		local pad = makePart({
 			Name = "ClaimPad",
-			Size = Vector3.new(10, 0.5, 10),
-			Position = Vector3.new(x, 1.5, z + 8),
-			Color = Color3.fromRGB(0, 255, 180),
-			Parent = plotFolder,
+			Size = Vector3.new(9, 0.4, 9),
+			Position = Vector3.new(x, 1.3, z + 8),
+			Color = Color3.fromRGB(0, 255, 170),
+			Material = Enum.Material.Neon,
+			Parent = folder,
 		})
 		pad:SetAttribute("PlotId", i + 1)
 	end
 
 	-- Farm pads
-	local farmPositions = {
-		Vector3.new(90, 1, 90),
-		Vector3.new(-90, 1, 90),
-		Vector3.new(90, 1, -90),
-		Vector3.new(-90, 1, -90),
-		Vector3.new(0, 1, 100),
-		Vector3.new(0, 1, -100),
+	local farms = {
+		Vector3.new(80, 0.8, 80),
+		Vector3.new(-80, 0.8, 80),
+		Vector3.new(80, 0.8, -80),
+		Vector3.new(-80, 0.8, -80),
+		Vector3.new(0, 0.8, 95),
+		Vector3.new(0, 0.8, -95),
 	}
-	for i, pos in ipairs(farmPositions) do
-		local farm = neonPart({
-			Name = "FarmPad_" .. i,
-			Size = Vector3.new(16, 0.6, 16),
+	for i, pos in ipairs(farms) do
+		local farm = makePart({
+			Name = "FarmPad",
+			Size = Vector3.new(14, 0.5, 14),
 			Position = pos,
-			Color = Color3.fromRGB(50, 180, 255),
-			Parent = mapFolder,
+			Color = Color3.fromRGB(40, 170, 255),
+			Material = Enum.Material.Neon,
+			Parent = map,
 		})
 		farm:SetAttribute("IsFarmPad", true)
 
-		local farmBB = Instance.new("BillboardGui")
-		farmBB.Size = UDim2.new(0, 120, 0, 40)
-		farmBB.StudsOffset = Vector3.new(0, 4, 0)
-		farmBB.AlwaysOnTop = true
-		farmBB.Parent = farm
+		local fbb = Instance.new("BillboardGui")
+		fbb.Size = UDim2.fromOffset(110, 36)
+		fbb.StudsOffset = Vector3.new(0, 3.5, 0)
+		fbb.AlwaysOnTop = true
+		fbb.Parent = farm
 		local fl = Instance.new("TextLabel")
-		fl.Size = UDim2.new(1, 0, 1, 0)
+		fl.Size = UDim2.fromScale(1, 1)
 		fl.BackgroundTransparency = 1
-		fl.Text = "FARM XP"
-		fl.TextColor3 = Color3.fromRGB(100, 220, 255)
+		fl.Text = "FARM XP [E]"
+		fl.TextColor3 = Color3.fromRGB(120, 220, 255)
 		fl.Font = Enum.Font.GothamBold
 		fl.TextScaled = true
-		fl.Parent = farmBB
+		fl.Parent = fbb
 	end
 
 	-- Spawn
-	local spawnLoc = Instance.new("SpawnLocation")
-	spawnLoc.Name = "MainSpawn"
-	spawnLoc.Size = Vector3.new(16, 1, 16)
-	spawnLoc.Position = Vector3.new(0, 2, 70)
-	spawnLoc.Color = Color3.fromRGB(0, 255, 200)
-	spawnLoc.Material = Enum.Material.Neon
-	spawnLoc.Anchored = true
-	spawnLoc.Duration = 0
-	spawnLoc.Neutral = true
-	spawnLoc.Parent = mapFolder
+	local spawn = Instance.new("SpawnLocation")
+	spawn.Name = "MainSpawn"
+	spawn.Size = Vector3.new(14, 1, 14)
+	spawn.Position = Vector3.new(0, 1.5, 65)
+	spawn.Color = Color3.fromRGB(0, 255, 200)
+	spawn.Material = Enum.Material.Neon
+	spawn.Anchored = true
+	spawn.Duration = 0
+	spawn.Neutral = true
+	spawn.Parent = map
 
-	part({
-		Name = "SpawnPlatform",
-		Size = Vector3.new(30, 1.5, 30),
-		Position = Vector3.new(0, 0.75, 70),
-		Color = Color3.fromRGB(25, 30, 50),
-		Parent = mapFolder,
+	makePart({
+		Name = "SpawnPlat",
+		Size = Vector3.new(28, 1, 28),
+		Position = Vector3.new(0, 0.5, 65),
+		Color = Color3.fromRGB(30, 35, 55),
+		Parent = map,
 	})
 
-	-- Lighting
-	Lighting.Brightness = 1.5
-	Lighting.Ambient = Color3.fromRGB(40, 30, 60)
-	Lighting.OutdoorAmbient = Color3.fromRGB(50, 35, 70)
-	Lighting.FogColor = Color3.fromRGB(30, 15, 45)
-	Lighting.FogEnd = 400
-	Lighting.FogStart = 80
-	Lighting.ClockTime = 22
-	Lighting.GlobalShadows = true
+	-- LIGHTING - CLEAR, not muddy
+	Lighting.Brightness = 2.2
+	Lighting.Ambient = Color3.fromRGB(70, 60, 90)
+	Lighting.OutdoorAmbient = Color3.fromRGB(80, 70, 100)
+	Lighting.FogColor = Color3.fromRGB(40, 30, 55)
+	Lighting.FogStart = 200
+	Lighting.FogEnd = 600
+	Lighting.ClockTime = 20.5
+	Lighting.GlobalShadows = false
 
 	local atmo = Lighting:FindFirstChildOfClass("Atmosphere")
 	if not atmo then
 		atmo = Instance.new("Atmosphere")
 		atmo.Parent = Lighting
 	end
-	atmo.Density = 0.35
-	atmo.Color = Color3.fromRGB(80, 40, 120)
-	atmo.Decay = Color3.fromRGB(40, 20, 60)
-	atmo.Glare = 0.3
-	atmo.Haze = 1.5
+	atmo.Density = 0.12
+	atmo.Offset = 0.1
+	atmo.Color = Color3.fromRGB(90, 70, 130)
+	atmo.Decay = Color3.fromRGB(50, 40, 70)
+	atmo.Glare = 0.15
+	atmo.Haze = 0.4
 
 	local bloom = Lighting:FindFirstChildOfClass("BloomEffect")
 	if not bloom then
 		bloom = Instance.new("BloomEffect")
 		bloom.Parent = Lighting
 	end
-	bloom.Intensity = 0.9
-	bloom.Size = 24
-	bloom.Threshold = 0.85
+	bloom.Intensity = 0.6
+	bloom.Size = 18
+	bloom.Threshold = 0.9
 
-	print("Brainrot Map BUILT - Arena + 8 Plots + Farm Pads + Neon night vibe")
+	-- remove heavy color correction if any
+	local cc = Lighting:FindFirstChildOfClass("ColorCorrectionEffect")
+	if cc then cc:Destroy() end
+
+	print("[MapBuilder] Clean neon map built")
 end
 
 MapBuilder.Build()
-
 return MapBuilder

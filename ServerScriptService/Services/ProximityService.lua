@@ -1,60 +1,67 @@
 --!strict
 --[[
-	Adds ProximityPrompts to Farm pads and Claim pads after map builds
+	Reliable E-key prompts on Farm + Claim pads
 ]]
 
 local Workspace = game:GetService("Workspace")
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local CombatService = require(script.Parent.CombatService)
-local PlotService = require(script.Parent.PlotService)
-local EventService = require(script.Parent.EventService)
 local Config = require(script.Parent.Parent.Modules.Config)
 
 local ProximityService = {}
 
-local function getNotify()
+local function notify(player: Player, ok: boolean, msg: string)
 	local remotes = ReplicatedStorage:FindFirstChild("Remotes")
-	if remotes then return remotes:FindFirstChild("Notify") end
-	return nil
+	if not remotes then return end
+	local n = remotes:FindFirstChild("Notify")
+	if n then
+		n:FireClient(player, ok and "Success" or "Error", msg)
+	end
 end
 
 local function setup()
-	local map = Workspace:WaitForChild("BrainrotMap", 15)
+	local map = Workspace:WaitForChild("BrainrotMap", 20)
 	if not map then
-		warn("ProximityService: BrainrotMap not found")
+		warn("[ProximityService] No BrainrotMap")
 		return
 	end
 
+	-- Wait a frame so other services exist
+	task.wait(0.5)
+
+	local CombatService = require(script.Parent.CombatService)
+	local PlotService = require(script.Parent.PlotService)
+	local EventService = require(script.Parent.EventService)
+
 	-- Farm pads
 	for _, obj in ipairs(map:GetDescendants()) do
-		if obj:IsA("BasePart") and obj:GetAttribute("IsFarmPad") then
-			local existing = obj:FindFirstChildOfClass("ProximityPrompt")
-			if existing then existing:Destroy() end
+		if obj:IsA("BasePart") and obj:GetAttribute("IsFarmPad") == true then
+			local old = obj:FindFirstChildOfClass("ProximityPrompt")
+			if old then old:Destroy() end
 
 			local prompt = Instance.new("ProximityPrompt")
+			prompt.Name = "FarmPrompt"
 			prompt.ActionText = "Farm XP"
 			prompt.ObjectText = "XP Pad"
-			prompt.HoldDuration = 0.3
-			prompt.MaxActivationDistance = 12
+			prompt.KeyboardKeyCode = Enum.KeyCode.E
+			prompt.HoldDuration = 0
+			prompt.MaxActivationDistance = 14
 			prompt.RequiresLineOfSight = false
+			prompt.Style = Enum.ProximityPromptStyle.Default
 			prompt.Parent = obj
 
-			prompt.Triggered:Connect(function(player)
-				local multi = EventService.GetXPMulti()
-				local success, msg = CombatService.FarmXP(player)
-				-- extra pad bonus
-				if success then
+			prompt.Triggered:Connect(function(player: Player)
+				local ok, msg = CombatService.FarmXP(player)
+				if ok then
+					local multi = EventService.GetXPMulti()
+					local bonus = math.floor(Config.FarmPadBonusXP * multi)
 					local ls = player:FindFirstChild("leaderstats")
 					if ls and ls:FindFirstChild("XP") then
-						local bonus = math.floor(Config.FarmPadBonusXP * multi)
 						ls.XP.Value += bonus
 					end
-				end
-				local n = getNotify()
-				if n then
-					n:FireClient(player, success and "Success" or "Error", msg .. (success and " (+pad bonus)" or ""))
+					notify(player, true, msg .. " (+" .. bonus .. " pad bonus)")
+				else
+					notify(player, false, msg)
 				end
 			end)
 		end
@@ -62,36 +69,34 @@ local function setup()
 
 	-- Claim pads
 	for i = 1, 8 do
-		local plotFolder = map:FindFirstChild("Plot_" .. i)
-		if plotFolder then
-			local pad = plotFolder:FindFirstChild("ClaimPad")
-			if pad and pad:IsA("BasePart") then
-				local existing = pad:FindFirstChildOfClass("ProximityPrompt")
-				if existing then existing:Destroy() end
+		local folder = map:FindFirstChild("Plot_" .. i)
+		if not folder then continue end
+		local pad = folder:FindFirstChild("ClaimPad")
+		if not pad or not pad:IsA("BasePart") then continue end
 
-				local prompt = Instance.new("ProximityPrompt")
-				prompt.ActionText = "Claim Base"
-				prompt.ObjectText = "Plot " .. i
-				prompt.HoldDuration = 0.5
-				prompt.MaxActivationDistance = 10
-				prompt.RequiresLineOfSight = false
-				prompt.Parent = pad
+		local old = pad:FindFirstChildOfClass("ProximityPrompt")
+		if old then old:Destroy() end
 
-				local plotId = i
-				prompt.Triggered:Connect(function(player)
-					local success, msg = PlotService.Claim(player, plotId)
-					local n = getNotify()
-					if n then
-						n:FireClient(player, success and "Success" or "Error", msg)
-					end
-				end)
-			end
-		end
+		local prompt = Instance.new("ProximityPrompt")
+		prompt.Name = "ClaimPrompt"
+		prompt.ActionText = "Claim Base"
+		prompt.ObjectText = "Plot " .. i
+		prompt.KeyboardKeyCode = Enum.KeyCode.E
+		prompt.HoldDuration = 0.4
+		prompt.MaxActivationDistance = 12
+		prompt.RequiresLineOfSight = false
+		prompt.Parent = pad
+
+		local plotId = i
+		prompt.Triggered:Connect(function(player: Player)
+			local ok, msg = PlotService.Claim(player, plotId)
+			notify(player, ok, msg)
+		end)
 	end
 
-	print("ProximityService ready - Farm + Claim prompts live")
+	print("[ProximityService] E prompts ready on Farm + Claim pads")
 end
 
-task.spawn(setup)
+task.defer(setup)
 
 return ProximityService

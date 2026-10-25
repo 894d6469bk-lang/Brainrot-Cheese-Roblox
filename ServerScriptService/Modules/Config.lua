@@ -1,78 +1,74 @@
 --!strict
 local Config = {}
 
-Config.StartingTungCoin = 150
+Config.StartingTungCoin = 200
 Config.StarterBrainrot = "Noobini Pizzanini"
 Config.BaseIncomeTick = 1
 
 Config.OfflineIncomeCapHours = 8
 Config.OfflineIncomeMultiplier = 0.6
 
-Config.RebirthRequirement = 75000
-Config.RebirthMultiplierPerLevel = 0.3
+Config.RebirthRequirement = 50000
+Config.RebirthMultiplierPerLevel = 0.25
 
-Config.StealCooldown = 20
-Config.StealSuccessChance = 0.45
-Config.StealProtectionPassReduces = 0.15
+Config.StealCooldown = 18
+Config.StealSuccessChance = 0.50
 
--- Lucky events
-Config.LuckyEventIntervalSeconds = 90
-Config.LuckyEventDuration = 30
+Config.LuckyEventIntervalSeconds = 75
+Config.LuckyEventDuration = 25
 Config.LuckyEventIncomeMulti = 3
 Config.LuckyEventXPMulti = 2
 
--- Combat
 Config.StartingXP = 0
-Config.StartingPower = 10
+Config.StartingPower = 15
 Config.StartingLevel = 1
-Config.XPPerLevelBase = 100
-Config.PowerPerLevel = 8
+Config.XPPerLevelBase = 80
+Config.PowerPerLevel = 10
 
-Config.TransformCooldown = 12
-Config.TransformDuration = 50
+Config.TransformCooldown = 10
+Config.TransformDuration = 40
 Config.TransformPowerMultiplier = {
-	Common = 1.2,
-	Rare = 1.5,
-	Epic = 2.0,
-	Legendary = 2.8,
-	Mythic = 4.0,
-	Secret = 6.0,
+	Common = 1.3,
+	Rare = 1.6,
+	Epic = 2.1,
+	Legendary = 3.0,
+	Mythic = 4.5,
+	Secret = 7.0,
 }
 
-Config.PassiveXPPerSecond = 2
-Config.FarmXPAmount = 30
-Config.FarmCooldown = 2
-Config.FarmPadBonusXP = 50
+Config.PassiveXPPerSecond = 3
+Config.FarmXPAmount = 40
+Config.FarmCooldown = 1.5
+Config.FarmPadBonusXP = 60
 
-Config.AttackCooldown = 1.0
-Config.BaseDamage = 18
-Config.DamagePerPower = 0.45
-Config.KillTungCoinReward = 400
-Config.KillXPReward = 100
-Config.KillPowerSteal = 4
-Config.DeathTungCoinLossPercent = 0.07
+Config.AttackCooldown = 0.9
+Config.BaseDamage = 20
+Config.DamagePerPower = 0.5
+Config.KillTungCoinReward = 500
+Config.KillXPReward = 120
+Config.KillPowerSteal = 5
+Config.DeathTungCoinLossPercent = 0.05
 
--- Killstreak
-Config.KillstreakTimeout = 20
-Config.KillstreakBonusPerKill = 0.25
-Config.KillstreakMaxBonus = 3.0
+Config.KillstreakTimeout = 18
+Config.KillstreakBonusPerKill = 0.3
+Config.KillstreakMaxBonus = 3.5
 
 Config.MorphColors = {
-	Common = Color3.fromRGB(180, 180, 180),
-	Rare = Color3.fromRGB(80, 160, 255),
-	Epic = Color3.fromRGB(180, 70, 255),
-	Legendary = Color3.fromRGB(255, 180, 40),
-	Mythic = Color3.fromRGB(255, 60, 120),
-	Secret = Color3.fromRGB(0, 255, 200),
+	Common = Color3.fromRGB(200, 200, 200),
+	Rare = Color3.fromRGB(70, 150, 255),
+	Epic = Color3.fromRGB(170, 60, 255),
+	Legendary = Color3.fromRGB(255, 190, 30),
+	Mythic = Color3.fromRGB(255, 50, 110),
+	Secret = Color3.fromRGB(0, 255, 210),
 }
 
 Config.MorphScale = {
-	Common = 1.1,
-	Rare = 1.25,
-	Epic = 1.4,
-	Legendary = 1.6,
-	Mythic = 1.85,
-	Secret = 2.2,
+	Common = 1.15,
+	Rare = 1.3,
+	Epic = 1.5,
+	Legendary = 1.7,
+	Mythic = 2.0,
+	Secret = 2.4,
 }
 
 Config.GamePasses = {

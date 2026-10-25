@@ -1,36 +1,35 @@
-# Tung Tung Brainrot (Roblox)
+# Tung Tung Brainrot
 
-Viral brainrot tycoon + PvP. Currency = **Tung Tung Sahur Coin (TungCoin)**.
+Clean neon brainrot tycoon + PvP for Roblox.
 
-## Features
+## What works
+- Neon arena map (clear visibility, light fog)
+- TungCoin economy + brainrot shop
+- TRANSFORM (visual morph by rarity)
+- Farm XP button + **E on blue pads**
+- **E on green pads** to claim a base (8 plots)
+- Attack nearest / kill / killstreak
+- Lucky server events
+- Steal brainrots + rebirth
 
-### Core
-- Collect brainrots -> earn TungCoins/sec
-- Steal other players brainrots
-- Rebirth for multipliers
-- Offline earnings
+## Studio setup
+1. Copy `ServerScriptService` and `StarterPlayer` structure into your place
+2. File -> Experience Settings -> Security -> Enable Studio Access to API Services
+3. Press Play
 
-### Combat + Morph
-- TRANSFORM into your strongest brainrot (neon body, scale, particles, name tag)
-- Farm XP (button + farm pads with ProximityPrompt)
-- Level up -> Power
-- Attack & kill for TungCoins + XP + Power steal
-- **Killstreak** bonuses
+## Controls
+- **E** near blue pad = Farm XP
+- **E** near green pad = Claim base
+- UI buttons: Transform, Farm, Attack, Rebirth, buy brainrots
 
-### Map
-- Neon night arena
-- 8 claimable player plots (ProximityPrompt "Claim Base")
-- Farm XP pads around the map
-- Lucky server events every ~90s (x3 income / x2 XP)
-
-## Setup
-1. Copy folders into your place
-2. Experience Settings -> Security -> Enable Studio Access to API Services
-3. Play
-
-## New scripts this update
-- EventService.lua (lucky events + killstreak)
-- PlotService.lua (claim bases)
-- ProximityService.lua (E prompts on pads)
-
-Lock in. Print TungCoins.
+## Structure
+```
+ServerScriptService/
+  Main (Script)
+  Modules/ Config, BrainrotData, DataStoreService
+  Services/ MapBuilder, PlayerService, BrainrotService,
+            CombatService, EventService, PlotService,
+            ProximityService, MonetizationService, RemoteService
+StarterPlayer/StarterPlayerScripts/
+  ClientUI (LocalScript)
+```
